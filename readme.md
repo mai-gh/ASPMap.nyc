@@ -2,8 +2,9 @@
 
 ### New York City Alternate Side Parking Color Map
 
-https://mai-gh.github.io/streetparker2/
+# TRY IT HERE --> https://mai-gh.github.io/streetparker2/
 
+data source: https://data.cityofnewyork.us/Transportation/Parking-Regulation-Locations-and-Signs/xswq-wnv9
 
 ---
 
