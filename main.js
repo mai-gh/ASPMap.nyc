@@ -21,123 +21,7 @@ const Stroke = ol.style.Stroke;
 const Style = ol.style.Style;
 const GeoJSON = ol.format.GeoJSON;
 
-
-//https://mai-gh.github.io/streetparker2/wed_flatz.geojson.gz/
-
-//const response = await fetch('wz.json', {
-//const response = await fetch('./wed_flat.geojson.gz', {
-//  method: 'GET',
-//  headers: {
-//    'Content-Type': 'application/json',
-//    'Accept-Encoding': 'gzip'
-//  },
-//})
-
-
-//console.log("response", response)
-
-//var strData     = atob(response.body)
-
-// Convert binary string to character-number array
-//var charData    = strData.split('').map(function(x){return x.charCodeAt(0);});
-
-// Turn number array into byte-array
-//var binData     = new Uint8Array(charData);
-
-// Pako magic
-//var data        = pako.inflate(binData);
-
-// Convert gunzipped byteArray back to ascii string:
-//var strData     = String.fromCharCode.apply(null, new Uint16Array(data));
-
-// Output to console
-//console.log(strData);
-
-
-
-//const rrr = await response.blob()
-
-//console.log(rrr)
-
-
-
-//const bbb = await pako.ungzip(new Uint8Array(rrr))
-//const bbb = await pako.ungzip(new Uint8Array(response.body), {"to": "string"})
-//const bbb = await pako.ungzip(response.body, {"to": "string"})
-
-//console.log('bbb', bbb)
-//JSON.parse(bbb)
-
-
-//const mon_geojson = response.json()
-//console.log(mon_geojson);
-
-
-//console.dir(ol)
-
 useGeographic();
-
-//const place = [-110, 45];
-
-//const point = new Point(place);
-
-
-//const place2 = [-73.9526703782031, 40.8240388586191];
-//const place3 = [-73.9539370904452, 40.8245674824837];
-
-//const point2 = new Point(place2);
-//const point3 = new Point(place3);
-
-//const line = new LineString([point2, point3]);
-
-
-
-function lineStyleFunction(feature, resolution) {
-  return new Style({
-    stroke: new Stroke({
-      color: 'blue',
-      width: 8,
-    }),
-  });
-}
-
-
-// Points
-//function pointStyleFunction(feature, resolution) {
-//  return new Style({
-//    image: new CircleStyle({
-//      radius: 10,
-//      fill: new Fill({color: 'rgba(255, 0, 0, 0.1)'}),
-//      stroke: new Stroke({color: 'red', width: 8}),
-//    }),
-//    text: createTextStyle(feature, resolution, myDom.points),
-//  });
-//}
-//
-//const vectorPoints = new VectorLayer({
-//  source: new VectorSource({
-//    url: 'dbf_to_geojson/my_layer.json',
-//    format: new GeoJSON(),
-//  }),
-//  style: pointStyleFunction,
-//});
-
-
-//const vectorLines = new VectorLayer({
-//  source: new VectorSource({
-//    //url: './line-samples.geojson',
-//    //url: './try-line-samples.geojson',
-//    url: 'dbf_to_geojson/my_layer.json',
-//    format: new GeoJSON(),
-//  }),
-//  //style: lineStyleFunction,
-//  style: new Style({
-//    stroke: new Stroke({
-//      color: 'blue',
-//      width: 8,
-//    }),
-//  })
-//});
 
 const monLines = new VectorLayer({
   source: new VectorSource({
@@ -225,7 +109,6 @@ window.thuLines = thuLines;
 window.friLines = friLines;
 window.satLines = satLines;
 
-
 const map = new Map({
   target: 'map',
   view: new View({
@@ -236,7 +119,6 @@ const map = new Map({
     new TileLayer({
       source: new OSM(),
     }),
-    //vectorLines,
     monLines,
     tueLines,
     wedLines,
@@ -261,13 +143,6 @@ function formatCoordinate(coordinate, text) {
     </div>`;
 }
 
-//const info = document.getElementById('info');
-//map.on('moveend', function () {
-//  const view = map.getView();
-//  const center = view.getCenter();
-//  info.innerHTML = formatCoordinate(center);
-//});
-
 let popover;
 map.on('click', function (event) {
   if (popover) {
@@ -285,9 +160,6 @@ map.on('click', function (event) {
   const mid_lon = coordinate[0][0] - ((coordinate[0][0] - coordinate[1][0]) / 2);
   const mid_lat = coordinate[0][1] - ((coordinate[0][1] - coordinate[1][1]) / 2);
   popup.setPosition([
-
-    //coordinate[0][0] + Math.round(event.coordinate[0] / 360) * 360,
-    //coordinate[0][1],
     mid_lon + Math.round(event.coordinate[0] / 360) * 360,
     mid_lat,
   ]);
@@ -362,7 +234,3 @@ satCB.addEventListener("change", e => {
     satLines.setVisible(false)
   }
 })
-
-
-
-
