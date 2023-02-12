@@ -25,12 +25,12 @@ useGeographic();
 
 const monLines = new VectorLayer({
   source: new VectorSource({
-    url: './mon_flat.json',
+    url: './data/mon_flat.json',
     format: new GeoJSON(),
   }),
   style: new Style({
     stroke: new Stroke({
-      color: [255, 255, 0, .5], // yellow
+      color: [255, 255, 0, ./data5], // yellow
       width: 8,
     }),
   })
@@ -38,12 +38,12 @@ const monLines = new VectorLayer({
 
 const tueLines = new VectorLayer({
   source: new VectorSource({
-    url: './tue_flat.json',
+    url: './data/tue_flat.json',
     format: new GeoJSON(),
   }),
   style: new Style({
     stroke: new Stroke({
-      color: [0, 255, 0, .5], // green
+      color: [0, 255, 0, ./data5], // green
       width: 8,
     }),
   })
@@ -51,13 +51,13 @@ const tueLines = new VectorLayer({
 
 const wedLines = new VectorLayer({
   source: new VectorSource({
-    url: './wed_flat.json',
+    url: './data/wed_flat.json',
     format: new GeoJSON(),
   }),
   style: new Style({
     stroke: new Stroke({
       color: 'orange',
-      color: [255, 165, 0, .5], // orange
+      color: [255, 165, 0, ./data5], // orange
       width: 8,
     }),
   })
@@ -65,12 +65,12 @@ const wedLines = new VectorLayer({
 
 const thuLines = new VectorLayer({
   source: new VectorSource({
-    url: './thu_flat.json',
+    url: './data/thu_flat.json',
     format: new GeoJSON(),
   }),
   style: new Style({
     stroke: new Stroke({
-      color: [80, 0, 80, .5], // purple
+      color: [80, 0, 80, ./data5], // purple
       width: 8,
     }),
   })
@@ -78,12 +78,12 @@ const thuLines = new VectorLayer({
 
 const friLines = new VectorLayer({
   source: new VectorSource({
-    url: './fri_flat.json',
+    url: './data/fri_flat.json',
     format: new GeoJSON(),
   }),
   style: new Style({
     stroke: new Stroke({
-      color: [0, 0, 255, .5], // blue
+      color: [0, 0, 255, ./data5], // blue
       width: 8,
     }),
   })
@@ -91,7 +91,7 @@ const friLines = new VectorLayer({
 
 const satLines = new VectorLayer({
   source: new VectorSource({
-    url: './sat_flat.json',
+    url: './data/sat_flat.json',
     format: new GeoJSON(),
   }),
   style: new Style({
@@ -156,7 +156,6 @@ map.on('click', function (event) {
   const coordinate = feature.getGeometry().getCoordinates();
   const name = feature.get('name');
   const desc = feature.get('desc');
-  console.log('aaa', coordinate[0]);
   const mid_lon = coordinate[0][0] - ((coordinate[0][0] - coordinate[1][0]) / 2);
   const mid_lat = coordinate[0][1] - ((coordinate[0][1] - coordinate[1][1]) / 2);
   popup.setPosition([
