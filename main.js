@@ -30,7 +30,7 @@ const monLines = new VectorLayer({
   }),
   style: new Style({
     stroke: new Stroke({
-      color: [255, 255, 0, ./data5], // yellow
+      color: [255, 255, 0, .5], // yellow
       width: 8,
     }),
   })
@@ -43,7 +43,7 @@ const tueLines = new VectorLayer({
   }),
   style: new Style({
     stroke: new Stroke({
-      color: [0, 255, 0, ./data5], // green
+      color: [0, 255, 0, .5], // green
       width: 8,
     }),
   })
@@ -57,7 +57,7 @@ const wedLines = new VectorLayer({
   style: new Style({
     stroke: new Stroke({
       color: 'orange',
-      color: [255, 165, 0, ./data5], // orange
+      color: [255, 165, 0, .5], // orange
       width: 8,
     }),
   })
@@ -70,7 +70,7 @@ const thuLines = new VectorLayer({
   }),
   style: new Style({
     stroke: new Stroke({
-      color: [80, 0, 80, ./data5], // purple
+      color: [80, 0, 80, .5], // purple
       width: 8,
     }),
   })
@@ -83,7 +83,7 @@ const friLines = new VectorLayer({
   }),
   style: new Style({
     stroke: new Stroke({
-      color: [0, 0, 255, ./data5], // blue
+      color: [0, 0, 255, .5], // blue
       width: 8,
     }),
   })
