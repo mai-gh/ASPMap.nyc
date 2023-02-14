@@ -21,94 +21,86 @@ const Stroke = ol.style.Stroke;
 const Style = ol.style.Style;
 const GeoJSON = ol.format.GeoJSON;
 
+
+const vectors = {};
+const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+const colors = {
+  'mon': [255, 0, 0, .5],     // red
+  'tue': [0, 255, 0, .5],    // green
+  'wed': [255, 165, 0, .5], // orange
+  'thu': [80, 0, 80, .5],  // purple
+  'fri': [0, 0, 255, .5], // blue
+  'sat': [0, 0, 0, .5]   // black
+} 
+
+
+const scb = document.getElementById(`single_cb`);
+scb.addEventListener("change", e => {
+  for (let day of days) {
+    if (scb.checked && document.getElementById(`${day}_cb`).checked) {
+      vectors[`${day}MultiLines`].setVisible(false)
+    } else if (!scb.checked && document.getElementById(`${day}_cb`).checked) {
+      vectors[`${day}MultiLines`].setVisible(true)
+    }
+  }
+})
+
+
+
+
+for (let day of days) {
+
+  vectors[`${day}SingleLines`] = new VectorLayer({
+    source: new VectorSource({
+      url: `./data/${day}_single_flat.json`,
+      format: new GeoJSON(),
+    }),
+    style: new Style({
+      stroke: new Stroke({
+        color: colors[day],
+        width: 8,
+      }),
+    })
+  });
+
+  vectors[`${day}MultiLines`] = new VectorLayer({
+    source: new VectorSource({
+      url: `./data/${day}_multi_flat.json`,
+      format: new GeoJSON(),
+    }),
+    style: new Style({
+      stroke: new Stroke({
+        color: colors[day],
+        width: 8,
+      }),
+    })
+  });
+
+  let cb = document.getElementById(`${day}_cb`);
+  cb.addEventListener("change", e => {
+    if (!scb.checked) { // meaning show single AND multi
+      if (cb.checked) {
+        vectors[`${day}SingleLines`].setVisible(true)
+        vectors[`${day}MultiLines`].setVisible(true)
+      } else {
+        vectors[`${day}SingleLines`].setVisible(false)
+        vectors[`${day}MultiLines`].setVisible(false)
+      }
+    } else { // show ONLY single
+      if (cb.checked) {
+        vectors[`${day}SingleLines`].setVisible(true)
+        vectors[`${day}MultiLines`].setVisible(false)
+      } else {
+        vectors[`${day}SingleLines`].setVisible(false)
+        vectors[`${day}MultiLines`].setVisible(false)
+      }
+    }
+  })
+}
+
+
+
 useGeographic();
-
-const monLines = new VectorLayer({
-  source: new VectorSource({
-    url: './data/mon_flat.json',
-    format: new GeoJSON(),
-  }),
-  style: new Style({
-    stroke: new Stroke({
-      color: [255, 255, 0, .5], // yellow
-      width: 8,
-    }),
-  })
-});
-
-const tueLines = new VectorLayer({
-  source: new VectorSource({
-    url: './data/tue_flat.json',
-    format: new GeoJSON(),
-  }),
-  style: new Style({
-    stroke: new Stroke({
-      color: [0, 255, 0, .5], // green
-      width: 8,
-    }),
-  })
-});
-
-const wedLines = new VectorLayer({
-  source: new VectorSource({
-    url: './data/wed_flat.json',
-    format: new GeoJSON(),
-  }),
-  style: new Style({
-    stroke: new Stroke({
-      color: 'orange',
-      color: [255, 165, 0, .5], // orange
-      width: 8,
-    }),
-  })
-});
-
-const thuLines = new VectorLayer({
-  source: new VectorSource({
-    url: './data/thu_flat.json',
-    format: new GeoJSON(),
-  }),
-  style: new Style({
-    stroke: new Stroke({
-      color: [80, 0, 80, .5], // purple
-      width: 8,
-    }),
-  })
-});
-
-const friLines = new VectorLayer({
-  source: new VectorSource({
-    url: './data/fri_flat.json',
-    format: new GeoJSON(),
-  }),
-  style: new Style({
-    stroke: new Stroke({
-      color: [0, 0, 255, .5], // blue
-      width: 8,
-    }),
-  })
-});
-
-const satLines = new VectorLayer({
-  source: new VectorSource({
-    url: './data/sat_flat.json',
-    format: new GeoJSON(),
-  }),
-  style: new Style({
-    stroke: new Stroke({
-      color: [0, 0, 0, .5], // black
-      width: 8,
-    }),
-  })
-});
-
-window.monLines = monLines;
-window.tueLines = tueLines;
-window.wedLines = wedLines;
-window.thuLines = thuLines;
-window.friLines = friLines;
-window.satLines = satLines;
-
 const map = new Map({
   target: 'map',
   view: new View({
@@ -119,12 +111,7 @@ const map = new Map({
     new TileLayer({
       source: new OSM(),
     }),
-    monLines,
-    tueLines,
-    wedLines,
-    thuLines,
-    friLines,
-    satLines,
+    ...Object.values(vectors)
   ],
 });
 
@@ -136,11 +123,20 @@ const popup = new Overlay({
 });
 map.addOverlay(popup);
 
-function formatCoordinate(coordinate, text) {
+/*function formatCoordinate(text) {
   return `
     <div>
-      ${text}
+      ${text.name} :: ${text.desc} :: ${text.st} :: ${text.sos}
     </div>`;
+}*/
+function formatCoordinate(text) {
+  return `
+    <dl>
+      <dt>ORDER#:</dt><dd>${text.name}</dd>
+      <dt>STREET:</dt><dd>${text.st}</dd>
+      <dt>SIDE:</dt><dd>${text.sos}</dd>
+      <dt>TEXT:</dt><dd>${text.desc}</dd>
+    </dl>`;
 }
 
 let popover;
@@ -156,6 +152,8 @@ map.on('click', function (event) {
   const coordinate = feature.getGeometry().getCoordinates();
   const name = feature.get('name');
   const desc = feature.get('desc');
+  const st = feature.get('st');
+  const sos = feature.get('sos');
   const mid_lon = coordinate[0][0] - ((coordinate[0][0] - coordinate[1][0]) / 2);
   const mid_lat = coordinate[0][1] - ((coordinate[0][1] - coordinate[1][1]) / 2);
   popup.setPosition([
@@ -165,7 +163,7 @@ map.on('click', function (event) {
 
   popover = new bootstrap.Popover(element, {
     container: element.parentElement,
-    content: formatCoordinate(coordinate, `${name} : ${desc}`),
+    content: formatCoordinate({name, desc, st, sos}),
     html: true,
     offset: [0, 20],
     placement: 'top',
@@ -178,58 +176,3 @@ map.on('pointermove', function (event) {
   const type = map.hasFeatureAtPixel(event.pixel) ? 'pointer' : 'inherit';
   map.getViewport().style.cursor = type;
 });
-
-
-const monCB = document.getElementById("mon_cb");
-monCB.addEventListener("change", e => {
-  if (monCB.checked) {
-    monLines.setVisible(true)
-  } else {
-    monLines.setVisible(false)
-  }
-})
-
-const tueCB = document.getElementById("tue_cb");
-tueCB.addEventListener("change", e => {
-  if (tueCB.checked) {
-    tueLines.setVisible(true)
-  } else {
-    tueLines.setVisible(false)
-  }
-})
-
-const wedCB = document.getElementById("wed_cb");
-wedCB.addEventListener("change", e => {
-  if (wedCB.checked) {
-    wedLines.setVisible(true)
-  } else {
-    wedLines.setVisible(false)
-  }
-})
-
-const thuCB = document.getElementById("thu_cb");
-thuCB.addEventListener("change", e => {
-  if (thuCB.checked) {
-    thuLines.setVisible(true)
-  } else {
-    thuLines.setVisible(false)
-  }
-})
-
-const friCB = document.getElementById("fri_cb");
-friCB.addEventListener("change", e => {
-  if (friCB.checked) {
-    friLines.setVisible(true)
-  } else {
-    friLines.setVisible(false)
-  }
-})
-
-const satCB = document.getElementById("sat_cb");
-satCB.addEventListener("change", e => {
-  if (satCB.checked) {
-    satLines.setVisible(true)
-  } else {
-    satLines.setVisible(false)
-  }
-})

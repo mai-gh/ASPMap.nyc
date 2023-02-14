@@ -21,14 +21,37 @@
         background-color: lightblue;
         bottom: 0;
       }
+      dl.inline-flex {
+        display: flex;
+        flex-flow: row;
+        flex-wrap: wrap;
+        width: 300px;      /* set the container width*/
+        overflow: visible;
+      }
+      dl.inline-flex dt {
+        flex: 0 0 50%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+      dl.inline-flex dd {
+        flex:0 0 50%;
+        margin-left: auto;
+        text-align: left;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+      .popover-body{
+        width: 600px; /* Max Width of the popover (depending on the container!) */
+      }
     </style>
   </head>
   <body>
     <div id="map" class="map">
       <div id="popup"></div>
     </div>
-    <div id="options">
-      <form action="">
+    <div id="optionsss">
+      <form id="options" action="">
+        <div class="cb"> <input type="checkbox" id="single_cb" /> <label for="single_cb">Only single days</label> </div>
         <div class="cb"> <input type="checkbox" id="mon_cb" checked /> <label for="mon_cb">Monday</label> </div>
         <div class="cb"> <input type="checkbox" id="tue_cb" checked /> <label for="tue_cb">Tuesday</label> </div>
         <div class="cb"> <input type="checkbox" id="wed_cb" checked /> <label for="wed_cb">Wednesday</label> </div>
