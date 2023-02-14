@@ -123,12 +123,6 @@ const popup = new Overlay({
 });
 map.addOverlay(popup);
 
-/*function formatCoordinate(text) {
-  return `
-    <div>
-      ${text.name} :: ${text.desc} :: ${text.st} :: ${text.sos}
-    </div>`;
-}*/
 function formatCoordinate(text) {
   return `
     <dl>
