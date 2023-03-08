@@ -60,7 +60,8 @@ for (let day of days) {
         color: colors[day],
         width: 8,
       }),
-    })
+    }),
+    visible: false
   });
 
   vectors[`${day}MultiLines`] = new VectorLayer({
@@ -73,7 +74,8 @@ for (let day of days) {
         color: colors[day],
         width: 8,
       }),
-    })
+    }),
+    visible: false
   });
 
   let cb = document.getElementById(`${day}_cb`);
