@@ -108,7 +108,10 @@ const map = new Map({
   target: 'map',
   view: new View({
     center: [-73.9449975, 40.645244],
+    minZoom: 10,
     zoom: 16,
+    //extent: [-572513.341856, 5211017.966314, 916327.095083, 6636950.728974],
+    extent: [ -74.1, 40.535, -73.7, 40.945 ],
   }),
   layers: [
     new TileLayer({
@@ -172,6 +175,14 @@ map.on('click', function (event) {
 map.on('pointermove', function (event) {
   const type = map.hasFeatureAtPixel(event.pixel) ? 'pointer' : 'inherit';
   map.getViewport().style.cursor = type;
+
+    //const view = map.getView();
+});
+
+map.on('click', function(evt){
+    // Get the pointer coordinate
+    console.log(evt.frameState.extent);
+//    let coordinate = ol.proj.transform(evt.coordinate);
 });
 
 map.on('loadstart', function () {
