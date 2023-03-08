@@ -175,14 +175,6 @@ map.on('click', function (event) {
 map.on('pointermove', function (event) {
   const type = map.hasFeatureAtPixel(event.pixel) ? 'pointer' : 'inherit';
   map.getViewport().style.cursor = type;
-
-    //const view = map.getView();
-});
-
-map.on('click', function(evt){
-    // Get the pointer coordinate
-    console.log(evt.frameState.extent);
-//    let coordinate = ol.proj.transform(evt.coordinate);
 });
 
 map.on('loadstart', function () {
@@ -193,8 +185,6 @@ map.on('loadend', function () {
 });
 
 map.addInteraction(new Link());
-
-
 
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.has('l')) {
