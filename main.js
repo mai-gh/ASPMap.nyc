@@ -172,3 +172,10 @@ map.on('pointermove', function (event) {
   const type = map.hasFeatureAtPixel(event.pixel) ? 'pointer' : 'inherit';
   map.getViewport().style.cursor = type;
 });
+
+map.on('loadstart', function () {
+  map.getTargetElement().classList.add('spinner');
+});
+map.on('loadend', function () {
+  map.getTargetElement().classList.remove('spinner');
+});
