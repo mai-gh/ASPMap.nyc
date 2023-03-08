@@ -6,6 +6,7 @@
 //import {useGeographic} from 'ol/proj.js';
 //import {Stroke, Style} from 'ol/style.js';
 //import GeoJSON from 'ol/format/GeoJSON.js';
+//import Link from 'ol/interaction/Link.js';
 
 const Feature = ol.Feature;
 const Map = ol.Map;
@@ -20,7 +21,7 @@ const useGeographic = ol.proj.useGeographic;
 const Stroke = ol.style.Stroke;
 const Style = ol.style.Style;
 const GeoJSON = ol.format.GeoJSON;
-
+const Link = ol.interaction.Link;
 
 const vectors = {};
 const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
@@ -179,3 +180,21 @@ map.on('loadstart', function () {
 map.on('loadend', function () {
   map.getTargetElement().classList.remove('spinner');
 });
+
+map.addInteraction(new Link());
+
+
+
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.has('l')) {
+  let la = urlParams.get('l').split('');
+  if (la[1] === "1") document.getElementById(`mon_cb`).checked = true;
+  if (la[3] === "1") document.getElementById(`tue_cb`).checked = true;
+  if (la[5] === "1") document.getElementById(`wed_cb`).checked = true;
+  if (la[7] === "1") document.getElementById(`thu_cb`).checked = true;
+  if (la[9] === "1") document.getElementById(`fri_cb`).checked = true;
+  if (la[11] === "1") document.getElementById(`sat_cb`).checked = true;
+
+  // check if multiday is set for monday, if not, set for single day
+  if (la[2] === "0") document.getElementById(`single_cb`).checked = true;
+}
