@@ -110,7 +110,7 @@ const map = new Map({
     center: [-73.9449975, 40.645244],
     minZoom: 10,
     zoom: 16,
-    //extent: [-572513.341856, 5211017.966314, 916327.095083, 6636950.728974],
+    enableRotation: false,
     extent: [ -74.1, 40.535, -73.7, 40.945 ],
   }),
   layers: [
