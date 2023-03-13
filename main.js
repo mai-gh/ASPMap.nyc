@@ -34,6 +34,45 @@ const Fill = ol.style.Fill;
 
 //import {Fill, Style} from 'ol/style.js';
 
+// Converts geojson-vt data to GeoJSON
+const replacer = function (key, value) {
+  if (!value || !value.geometry) {
+    return value;
+  }
+
+  let type;
+  const rawType = value.type;
+  let geometry = value.geometry;
+  if (rawType === 1) {
+    type = 'MultiPoint';
+    if (geometry.length == 1) {
+      type = 'Point';
+      geometry = geometry[0];
+    }
+  } else if (rawType === 2) {
+    type = 'MultiLineString';
+    if (geometry.length == 1) {
+      type = 'LineString';
+      geometry = geometry[0];
+    }
+  } else if (rawType === 3) {
+    type = 'Polygon';
+    if (geometry.length > 1) {
+      type = 'MultiPolygon';
+      geometry = [geometry];
+    }
+  }
+
+  return {
+    'type': 'Feature',
+    'geometry': {
+      'type': type,
+      'coordinates': geometry,
+    },
+    'properties': value.tags,
+  };
+};
+
 
 const vectors = {};
 const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
@@ -51,102 +90,101 @@ const scb = document.getElementById(`single_cb`);
 scb.addEventListener("change", e => {
   for (let day of days) {
     if (scb.checked && document.getElementById(`${day}_cb`).checked) {
-      vectors[`${day}MultiLines`].setVisible(false)
+      vectors[`${day}_multi`].setVisible(false)
     } else if (!scb.checked && document.getElementById(`${day}_cb`).checked) {
-      vectors[`${day}MultiLines`].setVisible(true)
+      vectors[`${day}_multi`].setVisible(true)
     }
   }
 })
 
 
+const generateVectorTileSource = async (day, sm) => {
+    const json = await fetch(`./data/${day}_${sm}_flat.json`).then(r => r.json());
+    const tileIndex = geojsonvt(json, {
+      extent: 4096,
+      maxZoom: 20,
+    });
+    const format = new GeoJSON({
+      // Data returned from geojson-vt is in tile pixel units
+      dataProjection: new Projection({
+        code: 'TILE_PIXELS',
+        units: 'tile-pixels',
+        extent: [0, 0, 4096, 4096],
+      }),
+    });
+    const vectorSource = new VectorTileSource({
+      tileUrlFunction: function (tileCoord) {
+        // Use the tile coordinate as a pseudo URL for caching purposes
+        return JSON.stringify(tileCoord);
+      },
+      tileLoadFunction: function (tile, url) {
+        const tileCoord = JSON.parse(url);
+        const data = tileIndex.getTile(
+          tileCoord[0],
+          tileCoord[1],
+          tileCoord[2]
+        );
+        const geojson = JSON.stringify(
+          {
+            type: 'FeatureCollection',
+            features: data ? data.features : [],
+          },
+          replacer
+        );
+        const features = format.readFeatures(geojson, {
+          extent: vectorSource.getTileGrid().getTileCoordExtent(tileCoord),
+          featureProjection: map.getView().getProjection(),
+        });
+        tile.setFeatures(features);
+      },
+    });
 
+    return vectorSource;
 
+}
+
+useGeographic();
 for (let day of days) {
+  for (let sm of ['single', 'multi']) {
+//  let vts = await generateVectorTileSource(day, sm);
+//  console.log(vts);
 
-  vectors[`${day}SingleLines`] = new VectorLayer({
-    source: new VectorSource({
-      url: `./data/${day}_single_flat.json`,
-      format: new GeoJSON(),
-    }),
-    style: new Style({
-      stroke: new Stroke({
-        color: colors[day],
-        width: 8,
+    vectors[`${day}_${sm}`] = new VectorTileLayer({
+//      source: vts,
+      style: new Style({
+        stroke: new Stroke({
+          color: colors[day],
+          width: 8,
+        }),
       }),
-    }),
-    visible: false
-  });
+      visible: false,
+      //visible: true,
+    });
 
-  vectors[`${day}MultiLines`] = new VectorLayer({
-    source: new VectorSource({
-      url: `./data/${day}_multi_flat.json`,
-      format: new GeoJSON(),
-    }),
-    style: new Style({
-      stroke: new Stroke({
-        color: colors[day],
-        width: 8,
-      }),
-    }),
-    visible: false
-  });
+    //vectors[`${day}_${sm}`].setSource(generateVectorTileSource(day, sm));
+  }
 
   let cb = document.getElementById(`${day}_cb`);
   cb.addEventListener("change", e => {
     if (!scb.checked) { // meaning show single AND multi
       if (cb.checked) {
-        vectors[`${day}SingleLines`].setVisible(true)
-        vectors[`${day}MultiLines`].setVisible(true)
+        vectors[`${day}_single`].setVisible(true)
+        vectors[`${day}_multi`].setVisible(true)
       } else {
-        vectors[`${day}SingleLines`].setVisible(false)
-        vectors[`${day}MultiLines`].setVisible(false)
+        vectors[`${day}_single`].setVisible(false)
+        vectors[`${day}_multi`].setVisible(false)
       }
     } else { // show ONLY single
       if (cb.checked) {
-        vectors[`${day}SingleLines`].setVisible(true)
-        vectors[`${day}MultiLines`].setVisible(false)
+        vectors[`${day}_single`].setVisible(true)
+        vectors[`${day}_multi`].setVisible(false)
       } else {
-        vectors[`${day}SingleLines`].setVisible(false)
-        vectors[`${day}MultiLines`].setVisible(false)
+        vectors[`${day}_single`].setVisible(false)
+        vectors[`${day}_multi`].setVisible(false)
       }
     }
   })
 }
-
-//-----------------------------------------
-const layer = new VectorTileLayer({
-  //background: '#1a2b39',
-    style: new Style({
-      stroke: new Stroke({
-        color: colors['wed'],
-        width: 8,
-      }),
-    }),
-//  style: function (feature) {
-//    const color = feature.get('COLOR') || '#eeeeee';
-//    style.getFill().setColor(color);
-//    return style;
-//  },
-});
-
-
-
-
-
-//const style = new Style({
-//      stroke: new Stroke({
-//        color: colors['wed'],
-//        width: 8,
-//      }),
-  //fill: new Fill({
-  //  color: '#eeeeee',
-  //}),
-//});
-
-//-----------------------------------------
-
-
-useGeographic();
 const map = new Map({
   target: 'map',
   view: new View({
@@ -157,21 +195,36 @@ const map = new Map({
     enableRotation: false,
     extent: [ -74.1, 40.535, -73.7, 40.945 ],
   }),
-
   layers: [
       new TileLayer({
         source: new OSM()
       }),
-      layer,
+      ...Object.values(vectors),
     ],
-
-//  layers: [
-//    new TileLayer({
-//      source: new OSM(),
-//    }),
-//    ...Object.values(vectors)
-//  ],
 });
+
+(async () => {
+  for (let day of days) {
+    for (let sm of ['single', 'multi']) {
+      let vts = await generateVectorTileSource(day, sm);
+      vectors[`${day}_${sm}`].setSource(vts);
+    }
+  }
+})();
+
+//-----------------------------------------
+//const layer = new VectorTileLayer({
+//    style: new Style({
+//      stroke: new Stroke({
+//        color: colors['wed'],
+//        width: 8,
+//      }),
+//    }),
+//});
+
+//-----------------------------------------
+
+
 
 const element = document.getElementById('popup');
 
@@ -255,46 +308,7 @@ if (urlParams.has('l')) {
 
 
 
-// Converts geojson-vt data to GeoJSON
-const replacer = function (key, value) {
-  if (!value || !value.geometry) {
-    return value;
-  }
-
-  let type;
-  const rawType = value.type;
-  let geometry = value.geometry;
-  if (rawType === 1) {
-    type = 'MultiPoint';
-    if (geometry.length == 1) {
-      type = 'Point';
-      geometry = geometry[0];
-    }
-  } else if (rawType === 2) {
-    type = 'MultiLineString';
-    if (geometry.length == 1) {
-      type = 'LineString';
-      geometry = geometry[0];
-    }
-  } else if (rawType === 3) {
-    type = 'Polygon';
-    if (geometry.length > 1) {
-      type = 'MultiPolygon';
-      geometry = [geometry];
-    }
-  }
-
-  return {
-    'type': 'Feature',
-    'geometry': {
-      'type': type,
-      'coordinates': geometry,
-    },
-    'properties': value.tags,
-  };
-};
-
-
+/*
 const wrapper = async () => {
   //const _wed_s= await fetch("./data/wed_single_flat.json").then(r => r.json());
   //const _mon_s = resp.body.json();
@@ -321,39 +335,39 @@ const wrapper = async () => {
     }),
   });
 
-    const vectorSource = new VectorTileSource({
-      tileUrlFunction: function (tileCoord) {
-        // Use the tile coordinate as a pseudo URL for caching purposes
-        return JSON.stringify(tileCoord);
-      },
-      tileLoadFunction: function (tile, url) {
-        const tileCoord = JSON.parse(url);
-        const data = tileIndex.getTile(
-          tileCoord[0],
-          tileCoord[1],
-          tileCoord[2]
-        );
-        const geojson = JSON.stringify(
-          {
-            type: 'FeatureCollection',
-            features: data ? data.features : [],
-          },
-          replacer
-        );
-        const features = format.readFeatures(geojson, {
-          extent: vectorSource.getTileGrid().getTileCoordExtent(tileCoord),
-          featureProjection: map.getView().getProjection(),
-        });
-        tile.setFeatures(features);
-      },
-    });
-    layer.setSource(vectorSource);
+  const vectorSource = new VectorTileSource({
+    tileUrlFunction: function (tileCoord) {
+      // Use the tile coordinate as a pseudo URL for caching purposes
+      return JSON.stringify(tileCoord);
+    },
+    tileLoadFunction: function (tile, url) {
+      const tileCoord = JSON.parse(url);
+      const data = tileIndex.getTile(
+        tileCoord[0],
+        tileCoord[1],
+        tileCoord[2]
+      );
+      const geojson = JSON.stringify(
+        {
+          type: 'FeatureCollection',
+          features: data ? data.features : [],
+        },
+        replacer
+      );
+      const features = format.readFeatures(geojson, {
+        extent: vectorSource.getTileGrid().getTileCoordExtent(tileCoord),
+        featureProjection: map.getView().getProjection(),
+      });
+      tile.setFeatures(features);
+    },
+  });
+  layer.setSource(vectorSource);
 
 
 }
-
+*/
 map.on('moveend', e => {
   console.log(map.getView().getZoom());
 })
 
-wrapper();
+//wrapper();
