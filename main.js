@@ -23,6 +23,18 @@ const Style = ol.style.Style;
 const GeoJSON = ol.format.GeoJSON;
 const Link = ol.interaction.Link;
 
+
+//import VectorTileLayer from 'ol/layer/VectorTile.js';
+//import VectorTileSource from 'ol/source/VectorTile.js';
+//import Projection from 'ol/proj/Projection.js';
+const VectorTileLayer = ol.layer.VectorTile;
+const VectorTileSource = ol.source.VectorTile;
+const Projection = ol.proj.Projection;
+const Fill = ol.style.Fill;
+
+//import {Fill, Style} from 'ol/style.js';
+
+
 const vectors = {};
 const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 const colors = {
@@ -101,6 +113,37 @@ for (let day of days) {
   })
 }
 
+//-----------------------------------------
+const layer = new VectorTileLayer({
+  //background: '#1a2b39',
+    style: new Style({
+      stroke: new Stroke({
+        color: colors['wed'],
+        width: 8,
+      }),
+    }),
+//  style: function (feature) {
+//    const color = feature.get('COLOR') || '#eeeeee';
+//    style.getFill().setColor(color);
+//    return style;
+//  },
+});
+
+
+
+
+
+//const style = new Style({
+//      stroke: new Stroke({
+//        color: colors['wed'],
+//        width: 8,
+//      }),
+  //fill: new Fill({
+  //  color: '#eeeeee',
+  //}),
+//});
+
+//-----------------------------------------
 
 
 useGeographic();
@@ -108,17 +151,26 @@ const map = new Map({
   target: 'map',
   view: new View({
     center: [-73.9449975, 40.645244],
+    maxZoom: 20,
     minZoom: 10,
     zoom: 16,
     enableRotation: false,
     extent: [ -74.1, 40.535, -73.7, 40.945 ],
   }),
+
   layers: [
-    new TileLayer({
-      source: new OSM(),
-    }),
-    ...Object.values(vectors)
-  ],
+      new TileLayer({
+        source: new OSM()
+      }),
+      layer,
+    ],
+
+//  layers: [
+//    new TileLayer({
+//      source: new OSM(),
+//    }),
+//    ...Object.values(vectors)
+//  ],
 });
 
 const element = document.getElementById('popup');
@@ -187,6 +239,7 @@ map.on('loadend', function () {
 map.addInteraction(new Link());
 
 const urlParams = new URLSearchParams(window.location.search);
+
 if (urlParams.has('l')) {
   let la = urlParams.get('l').split('');
   if (la[1] === "1") document.getElementById(`mon_cb`).checked = true;
@@ -199,3 +252,108 @@ if (urlParams.has('l')) {
   // check if multiday is set for monday, if not, set for single day
   if (la[2] === "0") document.getElementById(`single_cb`).checked = true;
 }
+
+
+
+// Converts geojson-vt data to GeoJSON
+const replacer = function (key, value) {
+  if (!value || !value.geometry) {
+    return value;
+  }
+
+  let type;
+  const rawType = value.type;
+  let geometry = value.geometry;
+  if (rawType === 1) {
+    type = 'MultiPoint';
+    if (geometry.length == 1) {
+      type = 'Point';
+      geometry = geometry[0];
+    }
+  } else if (rawType === 2) {
+    type = 'MultiLineString';
+    if (geometry.length == 1) {
+      type = 'LineString';
+      geometry = geometry[0];
+    }
+  } else if (rawType === 3) {
+    type = 'Polygon';
+    if (geometry.length > 1) {
+      type = 'MultiPolygon';
+      geometry = [geometry];
+    }
+  }
+
+  return {
+    'type': 'Feature',
+    'geometry': {
+      'type': type,
+      'coordinates': geometry,
+    },
+    'properties': value.tags,
+  };
+};
+
+
+const wrapper = async () => {
+  //const _wed_s= await fetch("./data/wed_single_flat.json").then(r => r.json());
+  //const _mon_s = resp.body.json();
+  //console.log(_wed_s);
+
+  const json= await fetch("./data/mon_single_flat.json").then(r => r.json());
+
+  const tileIndex = geojsonvt(json, {
+    extent: 4096,
+    //debug: 1,
+    maxZoom: 20,
+  });
+
+  //const ppp = new Projection({});
+  //const ppp = new ol.proj.Projection({});
+
+  const format = new GeoJSON({
+    // Data returned from geojson-vt is in tile pixel units
+    //dataProjection: new ol.proj.Projection({
+    dataProjection: new Projection({
+      code: 'TILE_PIXELS',
+      units: 'tile-pixels',
+      extent: [0, 0, 4096, 4096],
+    }),
+  });
+
+    const vectorSource = new VectorTileSource({
+      tileUrlFunction: function (tileCoord) {
+        // Use the tile coordinate as a pseudo URL for caching purposes
+        return JSON.stringify(tileCoord);
+      },
+      tileLoadFunction: function (tile, url) {
+        const tileCoord = JSON.parse(url);
+        const data = tileIndex.getTile(
+          tileCoord[0],
+          tileCoord[1],
+          tileCoord[2]
+        );
+        const geojson = JSON.stringify(
+          {
+            type: 'FeatureCollection',
+            features: data ? data.features : [],
+          },
+          replacer
+        );
+        const features = format.readFeatures(geojson, {
+          extent: vectorSource.getTileGrid().getTileCoordExtent(tileCoord),
+          featureProjection: map.getView().getProjection(),
+        });
+        tile.setFeatures(features);
+      },
+    });
+    layer.setSource(vectorSource);
+
+
+}
+
+map.on('moveend', e => {
+  console.log(map.getView().getZoom());
+})
+
+wrapper();
