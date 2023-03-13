@@ -16,13 +16,12 @@ const OSM = ol.source.OSM;
 const VectorSource = ol.source.Vector;
 const LineString = ol.geom.LineString;
 const TileLayer = ol.layer.Tile;
-const VectorLayer = ol.layer.Vector;
+//const VectorLayer = ol.layer.Vector;
 const useGeographic = ol.proj.useGeographic;
 const Stroke = ol.style.Stroke;
 const Style = ol.style.Style;
 const GeoJSON = ol.format.GeoJSON;
 const Link = ol.interaction.Link;
-
 
 //import VectorTileLayer from 'ol/layer/VectorTile.js';
 //import VectorTileSource from 'ol/source/VectorTile.js';
@@ -30,12 +29,8 @@ const Link = ol.interaction.Link;
 const VectorTileLayer = ol.layer.VectorTile;
 const VectorTileSource = ol.source.VectorTile;
 const Projection = ol.proj.Projection;
-const Fill = ol.style.Fill;
+//const Fill = ol.style.Fill;
 const toLonLat = ol.proj.toLonLat;
-
-
-
-//import {Fill, Style} from 'ol/style.js';
 
 // Converts geojson-vt data to GeoJSON
 const replacer = function (key, value) {
@@ -47,113 +42,103 @@ const replacer = function (key, value) {
   const rawType = value.type;
   let geometry = value.geometry;
   if (rawType === 1) {
-    type = 'MultiPoint';
+    type = "MultiPoint";
     if (geometry.length == 1) {
-      type = 'Point';
+      type = "Point";
       geometry = geometry[0];
     }
   } else if (rawType === 2) {
-    type = 'MultiLineString';
+    type = "MultiLineString";
     if (geometry.length == 1) {
-      type = 'LineString';
+      type = "LineString";
       geometry = geometry[0];
     }
   } else if (rawType === 3) {
-    type = 'Polygon';
+    type = "Polygon";
     if (geometry.length > 1) {
-      type = 'MultiPolygon';
+      type = "MultiPolygon";
       geometry = [geometry];
     }
   }
 
   return {
-    'type': 'Feature',
-    'geometry': {
-      'type': type,
-      'coordinates': geometry,
+    type: "Feature",
+    geometry: {
+      type: type,
+      coordinates: geometry,
     },
-    'properties': value.tags,
+    properties: value.tags,
   };
 };
 
-
 const vectors = {};
-const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+const days = ["mon", "tue", "wed", "thu", "fri", "sat"];
 const colors = {
-  'mon': [255, 0, 0, .5],     // red
-  'tue': [0, 255, 0, .5],    // green
-  'wed': [255, 165, 0, .5], // orange
-  'thu': [80, 0, 80, .5],  // purple
-  'fri': [0, 0, 255, .5], // blue
-  'sat': [0, 0, 0, .5]   // black
-} 
-
+  mon: [255, 0, 0, 0.5], // red
+  tue: [0, 255, 0, 0.5], // green
+  wed: [255, 165, 0, 0.5], // orange
+  thu: [80, 0, 80, 0.5], // purple
+  fri: [0, 0, 255, 0.5], // blue
+  sat: [0, 0, 0, 0.5], // black
+};
 
 const scb = document.getElementById(`single_cb`);
-scb.addEventListener("change", e => {
+scb.addEventListener("change", (e) => {
   for (let day of days) {
     if (scb.checked && document.getElementById(`${day}_cb`).checked) {
-      vectors[`${day}_multi`].setVisible(false)
+      vectors[`${day}_multi`].setVisible(false);
     } else if (!scb.checked && document.getElementById(`${day}_cb`).checked) {
-      vectors[`${day}_multi`].setVisible(true)
+      vectors[`${day}_multi`].setVisible(true);
     }
   }
-})
-
+});
 
 const generateVectorTileSource = async (day, sm) => {
-    const json = await fetch(`./data/${day}_${sm}_flat.json`).then(r => r.json());
-    const tileIndex = geojsonvt(json, {
-      extent: 4096,
-      maxZoom: 20,
-    });
-    const format = new GeoJSON({
-      // Data returned from geojson-vt is in tile pixel units
-      dataProjection: new Projection({
-        code: 'TILE_PIXELS',
-        units: 'tile-pixels',
-        extent: [0, 0, 4096, 4096],
-      }),
-    });
-    const vectorSource = new VectorTileSource({
-      tileUrlFunction: function (tileCoord) {
-        // Use the tile coordinate as a pseudo URL for caching purposes
-        return JSON.stringify(tileCoord);
-      },
-      tileLoadFunction: function (tile, url) {
-        const tileCoord = JSON.parse(url);
-        const data = tileIndex.getTile(
-          tileCoord[0],
-          tileCoord[1],
-          tileCoord[2]
-        );
-        const geojson = JSON.stringify(
-          {
-            type: 'FeatureCollection',
-            features: data ? data.features : [],
-          },
-          replacer
-        );
-        const features = format.readFeatures(geojson, {
-          extent: vectorSource.getTileGrid().getTileCoordExtent(tileCoord),
-          featureProjection: map.getView().getProjection(),
-        });
-        tile.setFeatures(features);
-      },
-    });
+  const json = await fetch(`./data/${day}_${sm}_flat.json`).then((r) =>
+    r.json()
+  );
+  const tileIndex = geojsonvt(json, {
+    extent: 4096,
+    maxZoom: 20,
+  });
+  const format = new GeoJSON({
+    // Data returned from geojson-vt is in tile pixel units
+    dataProjection: new Projection({
+      code: "TILE_PIXELS",
+      units: "tile-pixels",
+      extent: [0, 0, 4096, 4096],
+    }),
+  });
+  const vectorSource = new VectorTileSource({
+    tileUrlFunction: function (tileCoord) {
+      // Use the tile coordinate as a pseudo URL for caching purposes
+      return JSON.stringify(tileCoord);
+    },
+    tileLoadFunction: function (tile, url) {
+      const tileCoord = JSON.parse(url);
+      const data = tileIndex.getTile(tileCoord[0], tileCoord[1], tileCoord[2]);
+      const geojson = JSON.stringify(
+        {
+          type: "FeatureCollection",
+          features: data ? data.features : [],
+        },
+        replacer
+      );
+      const features = format.readFeatures(geojson, {
+        extent: vectorSource.getTileGrid().getTileCoordExtent(tileCoord),
+        featureProjection: map.getView().getProjection(),
+      });
+      tile.setFeatures(features);
+    },
+  });
 
-    return vectorSource;
-
-}
+  return vectorSource;
+};
 
 useGeographic();
 for (let day of days) {
-  for (let sm of ['single', 'multi']) {
-//  let vts = await generateVectorTileSource(day, sm);
-//  console.log(vts);
-
+  for (let sm of ["single", "multi"]) {
     vectors[`${day}_${sm}`] = new VectorTileLayer({
-//      source: vts,
       style: new Style({
         stroke: new Stroke({
           color: colors[day],
@@ -161,75 +146,61 @@ for (let day of days) {
         }),
       }),
       visible: false,
-      //visible: true,
     });
-
-    //vectors[`${day}_${sm}`].setSource(generateVectorTileSource(day, sm));
   }
 
   let cb = document.getElementById(`${day}_cb`);
-  cb.addEventListener("change", e => {
-    if (!scb.checked) { // meaning show single AND multi
+  cb.addEventListener("change", (e) => {
+    if (!scb.checked) {
+      // meaning show single AND multi
       if (cb.checked) {
-        vectors[`${day}_single`].setVisible(true)
-        vectors[`${day}_multi`].setVisible(true)
+        vectors[`${day}_single`].setVisible(true);
+        vectors[`${day}_multi`].setVisible(true);
       } else {
-        vectors[`${day}_single`].setVisible(false)
-        vectors[`${day}_multi`].setVisible(false)
+        vectors[`${day}_single`].setVisible(false);
+        vectors[`${day}_multi`].setVisible(false);
       }
-    } else { // show ONLY single
+    } else {
+      // show ONLY single
       if (cb.checked) {
-        vectors[`${day}_single`].setVisible(true)
-        vectors[`${day}_multi`].setVisible(false)
+        vectors[`${day}_single`].setVisible(true);
+        vectors[`${day}_multi`].setVisible(false);
       } else {
-        vectors[`${day}_single`].setVisible(false)
-        vectors[`${day}_multi`].setVisible(false)
+        vectors[`${day}_single`].setVisible(false);
+        vectors[`${day}_multi`].setVisible(false);
       }
     }
-  })
+  });
 }
+
 const map = new Map({
-  target: 'map',
+  target: "map",
   view: new View({
     center: [-73.9449975, 40.645244],
     maxZoom: 20,
     minZoom: 10,
     zoom: 16,
     enableRotation: false,
-    extent: [ -74.1, 40.535, -73.7, 40.945 ],
+    extent: [-74.1, 40.535, -73.7, 40.945],
   }),
   layers: [
-      new TileLayer({
-        source: new OSM()
-      }),
-      ...Object.values(vectors),
-    ],
+    new TileLayer({
+      source: new OSM(),
+    }),
+    ...Object.values(vectors),
+  ],
 });
 
 (async () => {
   for (let day of days) {
-    for (let sm of ['single', 'multi']) {
+    for (let sm of ["single", "multi"]) {
       let vts = await generateVectorTileSource(day, sm);
       vectors[`${day}_${sm}`].setSource(vts);
     }
   }
 })();
 
-//-----------------------------------------
-//const layer = new VectorTileLayer({
-//    style: new Style({
-//      stroke: new Stroke({
-//        color: colors['wed'],
-//        width: 8,
-//      }),
-//    }),
-//});
-
-//-----------------------------------------
-
-
-
-const element = document.getElementById('popup');
+const element = document.getElementById("popup");
 
 const popup = new Overlay({
   element: element,
@@ -248,82 +219,62 @@ function formatCoordinate(text) {
 }
 
 let popover;
-map.on('click', function (event) {
+map.on("click", function (event) {
   if (popover) {
     popover.dispose();
     popover = undefined;
   }
-  const feature = map.getFeaturesAtPixel(event.pixel)[0];
 
-  console.log("feature:", feature);
-  console.log("feature name:", feature.get('name'));
+  const feature = map.getFeaturesAtPixel(event.pixel)[0];
 
   if (!feature) {
     return;
   }
+
   const coordinate = feature.getGeometry().getCoordinates();
-
-  console.log("coordinate: ", coordinate);
-
-
-
-  const name = feature.get('name');
-  const desc = feature.get('desc');
-  const st = feature.get('st');
-  const sos = feature.get('sos');
-//  const mid_lon = coordinate[0][0] - ((coordinate[0][0] - coordinate[1][0]) / 2);
-//  const mid_lat = coordinate[0][1] - ((coordinate[0][1] - coordinate[1][1]) / 2);
-
+  const name = feature.get("name");
+  const desc = feature.get("desc");
+  const st = feature.get("st");
+  const sos = feature.get("sos");
   const [mid_lon, mid_lat] = toLonLat([
-    coordinate[0][0] - ((coordinate[0][0] - coordinate[1][0]) / 2),
-    coordinate[0][1] - ((coordinate[0][1] - coordinate[1][1]) / 2)
+    coordinate[0][0] - (coordinate[0][0] - coordinate[1][0]) / 2,
+    coordinate[0][1] - (coordinate[0][1] - coordinate[1][1]) / 2,
   ]);
 
-
-
-  console.log(mid_lon, mid_lat)
-//var newlonLat = new ol.proj.toLonLat(mid_lon, mid_lat).transform(map.getProjectionObject() , new ol.Projection("EPSG:4326"));
-
-//console.log(map)
-//var newlonLat = ol.proj.toLonLat([mid_lon, mid_lat])
-//  console.log("newlonLat: ", newlonLat)
   popup.setPosition([
-//   1,1 
     mid_lon + Math.round(event.coordinate[0] / 360) * 360,
     mid_lat,
   ]);
 
-  console.log(popup);
-
   popover = new bootstrap.Popover(element, {
     container: element.parentElement,
-    content: formatCoordinate({name, desc, st, sos}),
+    content: formatCoordinate({ name, desc, st, sos }),
     html: true,
     offset: [0, 20],
-    placement: 'top',
+    placement: "top",
     sanitize: false,
   });
   popover.show();
 });
 
-map.on('pointermove', function (event) {
-  const type = map.hasFeatureAtPixel(event.pixel) ? 'pointer' : 'inherit';
+map.on("pointermove", function (event) {
+  const type = map.hasFeatureAtPixel(event.pixel) ? "pointer" : "inherit";
   map.getViewport().style.cursor = type;
 });
 
-map.on('loadstart', function () {
-  map.getTargetElement().classList.add('spinner');
+map.on("loadstart", function () {
+  map.getTargetElement().classList.add("spinner");
 });
-map.on('loadend', function () {
-  map.getTargetElement().classList.remove('spinner');
+map.on("loadend", function () {
+  map.getTargetElement().classList.remove("spinner");
 });
 
 map.addInteraction(new Link());
 
 const urlParams = new URLSearchParams(window.location.search);
 
-if (urlParams.has('l')) {
-  let la = urlParams.get('l').split('');
+if (urlParams.has("l")) {
+  let la = urlParams.get("l").split("");
   if (la[1] === "1") document.getElementById(`mon_cb`).checked = true;
   if (la[3] === "1") document.getElementById(`tue_cb`).checked = true;
   if (la[5] === "1") document.getElementById(`wed_cb`).checked = true;
@@ -334,69 +285,3 @@ if (urlParams.has('l')) {
   // check if multiday is set for monday, if not, set for single day
   if (la[2] === "0") document.getElementById(`single_cb`).checked = true;
 }
-
-
-
-/*
-const wrapper = async () => {
-  //const _wed_s= await fetch("./data/wed_single_flat.json").then(r => r.json());
-  //const _mon_s = resp.body.json();
-  //console.log(_wed_s);
-
-  const json= await fetch("./data/mon_single_flat.json").then(r => r.json());
-
-  const tileIndex = geojsonvt(json, {
-    extent: 4096,
-    //debug: 1,
-    maxZoom: 20,
-  });
-
-  //const ppp = new Projection({});
-  //const ppp = new ol.proj.Projection({});
-
-  const format = new GeoJSON({
-    // Data returned from geojson-vt is in tile pixel units
-    //dataProjection: new ol.proj.Projection({
-    dataProjection: new Projection({
-      code: 'TILE_PIXELS',
-      units: 'tile-pixels',
-      extent: [0, 0, 4096, 4096],
-    }),
-  });
-
-  const vectorSource = new VectorTileSource({
-    tileUrlFunction: function (tileCoord) {
-      // Use the tile coordinate as a pseudo URL for caching purposes
-      return JSON.stringify(tileCoord);
-    },
-    tileLoadFunction: function (tile, url) {
-      const tileCoord = JSON.parse(url);
-      const data = tileIndex.getTile(
-        tileCoord[0],
-        tileCoord[1],
-        tileCoord[2]
-      );
-      const geojson = JSON.stringify(
-        {
-          type: 'FeatureCollection',
-          features: data ? data.features : [],
-        },
-        replacer
-      );
-      const features = format.readFeatures(geojson, {
-        extent: vectorSource.getTileGrid().getTileCoordExtent(tileCoord),
-        featureProjection: map.getView().getProjection(),
-      });
-      tile.setFeatures(features);
-    },
-  });
-  layer.setSource(vectorSource);
-
-
-}
-*/
-//map.on('moveend', e => {
-//  console.log(map.getView().getZoom());
-//})
-
-//wrapper();
