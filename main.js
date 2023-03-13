@@ -31,6 +31,9 @@ const VectorTileLayer = ol.layer.VectorTile;
 const VectorTileSource = ol.source.VectorTile;
 const Projection = ol.proj.Projection;
 const Fill = ol.style.Fill;
+const toLonLat = ol.proj.toLonLat;
+
+
 
 //import {Fill, Style} from 'ol/style.js';
 
@@ -251,20 +254,46 @@ map.on('click', function (event) {
     popover = undefined;
   }
   const feature = map.getFeaturesAtPixel(event.pixel)[0];
+
+  console.log("feature:", feature);
+  console.log("feature name:", feature.get('name'));
+
   if (!feature) {
     return;
   }
   const coordinate = feature.getGeometry().getCoordinates();
+
+  console.log("coordinate: ", coordinate);
+
+
+
   const name = feature.get('name');
   const desc = feature.get('desc');
   const st = feature.get('st');
   const sos = feature.get('sos');
-  const mid_lon = coordinate[0][0] - ((coordinate[0][0] - coordinate[1][0]) / 2);
-  const mid_lat = coordinate[0][1] - ((coordinate[0][1] - coordinate[1][1]) / 2);
+//  const mid_lon = coordinate[0][0] - ((coordinate[0][0] - coordinate[1][0]) / 2);
+//  const mid_lat = coordinate[0][1] - ((coordinate[0][1] - coordinate[1][1]) / 2);
+
+  const [mid_lon, mid_lat] = toLonLat([
+    coordinate[0][0] - ((coordinate[0][0] - coordinate[1][0]) / 2),
+    coordinate[0][1] - ((coordinate[0][1] - coordinate[1][1]) / 2)
+  ]);
+
+
+
+  console.log(mid_lon, mid_lat)
+//var newlonLat = new ol.proj.toLonLat(mid_lon, mid_lat).transform(map.getProjectionObject() , new ol.Projection("EPSG:4326"));
+
+//console.log(map)
+//var newlonLat = ol.proj.toLonLat([mid_lon, mid_lat])
+//  console.log("newlonLat: ", newlonLat)
   popup.setPosition([
+//   1,1 
     mid_lon + Math.round(event.coordinate[0] / 360) * 360,
     mid_lat,
   ]);
+
+  console.log(popup);
 
   popover = new bootstrap.Popover(element, {
     container: element.parentElement,
@@ -366,8 +395,8 @@ const wrapper = async () => {
 
 }
 */
-map.on('moveend', e => {
-  console.log(map.getView().getZoom());
-})
+//map.on('moveend', e => {
+//  console.log(map.getView().getZoom());
+//})
 
 //wrapper();
