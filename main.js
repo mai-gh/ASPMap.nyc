@@ -151,6 +151,29 @@ const generateVectorTileSource = async (day, sm) => {
   return vectorSource;
 };
 
+const toggleLayerFromCB = (day) => (e) => {
+    const cb = document.getElementById(`${day}_cb`);
+    if (!scb.checked) {
+      // meaning show single AND multi
+      if (cb.checked) {
+        vectors[`${day}_single`].setVisible(true);
+        vectors[`${day}_multi`].setVisible(true);
+      } else {
+        vectors[`${day}_single`].setVisible(false);
+        vectors[`${day}_multi`].setVisible(false);
+      }
+    } else {
+      // show ONLY single
+      if (cb.checked) {
+        vectors[`${day}_single`].setVisible(true);
+        vectors[`${day}_multi`].setVisible(false);
+      } else {
+        vectors[`${day}_single`].setVisible(false);
+        vectors[`${day}_multi`].setVisible(false);
+      }
+    }
+}
+
 useGeographic();
 for (let day of days) {
   for (let sm of ["single", "multi"]) {
@@ -165,7 +188,12 @@ for (let day of days) {
     });
   }
 
+
+
   let cb = document.getElementById(`${day}_cb`);
+
+  cb.addEventListener("change", toggleLayerFromCB(day))
+/*
   cb.addEventListener("change", (e) => {
     if (!scb.checked) {
       // meaning show single AND multi
@@ -187,6 +215,7 @@ for (let day of days) {
       }
     }
   });
+*/
 }
 
 //import {Attribution, defaults as defaultControls} from 'ol/control.js';
@@ -227,6 +256,7 @@ const map = new Map({
       let vts = await generateVectorTileSource(day, sm);
       vectors[`${day}_${sm}`].setSource(vts);
     }
+    toggleLayerFromCB(day)(); // set layers now based on initial "checked" state
   }
 })();
 
