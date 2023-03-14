@@ -31,6 +31,10 @@ const VectorTileSource = ol.source.VectorTile;
 const Projection = ol.proj.Projection;
 //const Fill = ol.style.Fill;
 const toLonLat = ol.proj.toLonLat;
+//import {Attribution, defaults as defaultControls} from 'ol/control.js';
+const Attribution = ol.control.Attribution;
+const defaultControls = ol.control.defaults.defaults;
+
 
 // Converts geojson-vt data to GeoJSON
 const replacer = function (key, value) {
@@ -188,55 +192,23 @@ for (let day of days) {
     });
   }
 
-
-
-  let cb = document.getElementById(`${day}_cb`);
-
-  cb.addEventListener("change", toggleLayerFromCB(day))
-/*
-  cb.addEventListener("change", (e) => {
-    if (!scb.checked) {
-      // meaning show single AND multi
-      if (cb.checked) {
-        vectors[`${day}_single`].setVisible(true);
-        vectors[`${day}_multi`].setVisible(true);
-      } else {
-        vectors[`${day}_single`].setVisible(false);
-        vectors[`${day}_multi`].setVisible(false);
-      }
-    } else {
-      // show ONLY single
-      if (cb.checked) {
-        vectors[`${day}_single`].setVisible(true);
-        vectors[`${day}_multi`].setVisible(false);
-      } else {
-        vectors[`${day}_single`].setVisible(false);
-        vectors[`${day}_multi`].setVisible(false);
-      }
-    }
-  });
-*/
+  document.getElementById(`${day}_cb`).addEventListener("change", toggleLayerFromCB(day));
 }
 
-//import {Attribution, defaults as defaultControls} from 'ol/control.js';
-const Attribution = ol.control.Attribution;
-const defaultControls = ol.control.defaults.defaults;
 
 const attribution = new Attribution({
   collapsible: true,
 });
-
-
 
 const map = new Map({
   target: "map",
   view: new View({
     center: [-73.9449975, 40.645244],
     maxZoom: 20,
-    minZoom: 10,
-    zoom: 13,
+    minZoom: 12,
+    zoom: 12,
     enableRotation: false,
-    extent: [-74.1, 40.535, -73.7, 40.945],
+    extent: [-74.15, 40.535, -73.65, 40.945],
     constrainResolution: true,
   }),
   controls: defaultControls({attribution: false}).extend([attribution]),
@@ -251,6 +223,8 @@ const map = new Map({
 });
 
 (async () => {
+  map.getTargetElement().classList.add('spinner');
+
   for (let day of days) {
     for (let sm of ["single", "multi"]) {
       let vts = await generateVectorTileSource(day, sm);
@@ -258,10 +232,21 @@ const map = new Map({
     }
     toggleLayerFromCB(day)(); // set layers now based on initial "checked" state
   }
+
+  // add these after our async loading so we can show the spinner always until async stuff is done
+  map.on("loadstart", function () {
+    map.getTargetElement().classList.add("spinner");
+  });
+
+  map.on("loadend", function () {
+    map.getTargetElement().classList.remove("spinner");
+  });
+
 })();
 
-const element = document.getElementById("popup");
+// ---------------- pop over stuff ---------------- //
 
+const element = document.getElementById("popup");
 const popup = new Overlay({
   element: element,
   stopEvent: false,
@@ -322,12 +307,6 @@ map.on("pointermove", function (event) {
   map.getViewport().style.cursor = type;
 });
 
-map.on("loadstart", function () {
-  map.getTargetElement().classList.add("spinner");
-});
-map.on("loadend", function () {
-  map.getTargetElement().classList.remove("spinner");
-});
 
 map.addInteraction(new Link());
 
