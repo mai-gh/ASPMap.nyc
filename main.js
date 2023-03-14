@@ -71,6 +71,22 @@ const replacer = function (key, value) {
   };
 };
 
+const attributions =
+  '<a href="https://github.com/mai-gh/streetparker2"><b>Fork me on GitHub</b></a>' + 
+  '<br />' +
+  '<br />' +
+  '<a href="https://data.cityofnewyork.us/Transportation/Parking-Regulation-Locations-and-Signs/xswq-wnv9">NYC OpenData</a>' +
+  '<br />' +
+  '<a href="https://www.openstreetmap.org/">OpenStreetMap</a>' +
+  '<br />' +
+  '<a href="https://openlayers.org/">OpenLayers</a>' +
+  '<br />' +
+  '<a href="https://github.com/Toblerity/Fiona">Fiona</a>' +
+  '<br />' +
+  '<a href="https://github.com/mapbox/geojson-vt">GeoJSON-VT</a>' +
+  '';
+
+
 const vectors = {};
 const days = ["mon", "tue", "wed", "thu", "fri", "sat"];
 const colors = {
@@ -173,19 +189,33 @@ for (let day of days) {
   });
 }
 
+//import {Attribution, defaults as defaultControls} from 'ol/control.js';
+const Attribution = ol.control.Attribution;
+const defaultControls = ol.control.defaults.defaults;
+
+const attribution = new Attribution({
+  collapsible: true,
+});
+
+
+
 const map = new Map({
   target: "map",
   view: new View({
     center: [-73.9449975, 40.645244],
     maxZoom: 20,
     minZoom: 10,
-    zoom: 16,
+    zoom: 13,
     enableRotation: false,
     extent: [-74.1, 40.535, -73.7, 40.945],
+    constrainResolution: true,
   }),
+  controls: defaultControls({attribution: false}).extend([attribution]),
   layers: [
     new TileLayer({
-      source: new OSM(),
+      source: new OSM({
+        attributions: attributions,
+      }),
     }),
     ...Object.values(vectors),
   ],
@@ -285,3 +315,50 @@ if (urlParams.has("l")) {
   // check if multiday is set for monday, if not, set for single day
   if (la[2] === "0") document.getElementById(`single_cb`).checked = true;
 }
+
+
+//document.querySelector('.ol-attribution').innerHTML= '' 
+
+let bbb = document.querySelector(".ol-attribution button")
+document.querySelector('.ol-attribution').replaceChildren(bbb)
+let uuu = document.createElement("ul")
+
+let l1 = document.createElement("li")
+l1.innerHTML = '<a href="https://github.com/mai-gh/streetparker2"><b>Fork me on GitHub</b></a>'; 
+uuu.appendChild(l1);
+uuu.appendChild(document.createElement("br"))
+uuu.appendChild(document.createElement("br"))
+
+let l2 = document.createElement("li")
+l2.innerHTML = '<a href="https://data.cityofnewyork.us/Transportation/Parking-Regulation-Locations-and-Signs/xswq-wnv9">NYC OpenData</a>'; 
+uuu.appendChild(l2);
+uuu.appendChild(document.createElement("br"))
+
+let l3 = document.createElement("li")
+l3.innerHTML = '<a href="https://www.openstreetmap.org/">OpenStreetMap</a>'; 
+uuu.appendChild(l3);
+uuu.appendChild(document.createElement("br"))
+
+let l4 = document.createElement("li")
+l4.innerHTML = '<a href="https://openlayers.org/">OpenLayers</a>'; 
+uuu.appendChild(l4);
+uuu.appendChild(document.createElement("br"))
+
+let l5 = document.createElement("li")
+l5.innerHTML = '<a href="https://github.com/mapbox/geojson-vt">GeoJSON-VT</a>'; 
+uuu.appendChild(l5);
+uuu.appendChild(document.createElement("br"))
+
+let l6 = document.createElement("li")
+l6.innerHTML = '<a href="https://github.com/Toblerity/Fiona">Fiona</a>'; 
+uuu.appendChild(l6);
+
+document.querySelector('.ol-attribution').appendChild(uuu);
+
+
+
+
+
+
+
+
