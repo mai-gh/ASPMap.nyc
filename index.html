@@ -41,9 +41,10 @@
       .color_select_box {
         width: 20px;
         height: auto;
-        border: 1px solid black;
+        padding: 0px !important;
         margin: 2px;
         margin-left: auto;
+        border-style: none !important;
       }
       dl.inline-flex {
         display: flex;
@@ -109,12 +110,12 @@
     <div id="options_box">
       <form id="options" action="">
         <div class="cb_row"> <input type="checkbox" id="single_cb" class='cb_input' checked /> <label for="single_cb" class='cb_label'>Only single days</label> </div>
-        <div class="cb_row"> <input type="checkbox" id="mon_cb" class='cb_input' checked /> <label for="mon_cb" class='cb_label'>Monday</label> <div class="color_select_box" id="mon_cs" style="background-color: #ff0000;"></div> </div>
-        <div class="cb_row"> <input type="checkbox" id="tue_cb" class='cb_input' /> <label for="tue_cb" class='cb_label'>Tuesday</label> <div class="color_select_box" id="mon_cs" style="background-color: #808000;"></div> </div>
-        <div class="cb_row"> <input type="checkbox" id="wed_cb" class='cb_input' /> <label for="wed_cb" class='cb_label'>Wednesday</label> <div class="color_select_box" id="mon_cs" style="background-color: #00ff00;"></div> </div>
-        <div class="cb_row"> <input type="checkbox" id="thu_cb" class='cb_input' /> <label for="thu_cb" class='cb_label'>Thursday</label> <div class="color_select_box" id="mon_cs" style="background-color: #008080;"></div> </div>
-        <div class="cb_row"> <input type="checkbox" id="fri_cb" class='cb_input' /> <label for="fri_cb" class='cb_label'>Friday</label> <div class="color_select_box" id="mon_cs" style="background-color: #0000ff;"></div> </div>
-        <div class="cb_row"> <input type="checkbox" id="sat_cb" class='cb_input' /> <label for="sat_cb" class='cb_label'>Saturday</label> <div class="color_select_box" id="mon_cs" style="background-color: #000000;"></div> </div>
+        <div class="cb_row"> <input type="checkbox" id="mon_cb" class='cb_input' checked /> <label for="mon_cb" class='cb_label'>Monday</label> <input type="color" class="color_select_box" id="mon_cs" value="#ff0000"></div>
+        <div class="cb_row"> <input type="checkbox" id="tue_cb" class='cb_input' /> <label for="tue_cb" class='cb_label'>Tuesday</label> <input type="color" class="color_select_box" id="tue_cs" value="#808000"></div>
+        <div class="cb_row"> <input type="checkbox" id="wed_cb" class='cb_input' /> <label for="wed_cb" class='cb_label'>Wednesday</label> <input type="color" class="color_select_box" id="wed_cs" value="#00ff00"></div>
+        <div class="cb_row"> <input type="checkbox" id="thu_cb" class='cb_input' /> <label for="thu_cb" class='cb_label'>Thursday</label> <input type="color" class="color_select_box" id="thu_cs" value="#008080"></div>
+        <div class="cb_row"> <input type="checkbox" id="fri_cb" class='cb_input' /> <label for="fri_cb" class='cb_label'>Friday</label> <input type="color" class="color_select_box" id="fri_cs" value="#0000ff"> </div>
+        <div class="cb_row"> <input type="checkbox" id="sat_cb" class='cb_input' /> <label for="sat_cb" class='cb_label'>Saturday</label> <input type="color" class="color_select_box" id="sat_cs" value="#000000"></div>
       </form>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
