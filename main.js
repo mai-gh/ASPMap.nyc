@@ -92,7 +92,8 @@ const attributions =
 
 const hexToArr = (s) => {
   const [r, g, b] = s.split("#")[1].match(/.{1,2}/g);
-  const c = [parseInt(r, 16), parseInt(g, 16), parseInt(b, 16), 0.5]
+  const a = 0.5;
+  const c = [parseInt(r, 16), parseInt(g, 16), parseInt(b, 16), a]
   return c;
 }
 
