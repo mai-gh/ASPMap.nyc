@@ -90,16 +90,53 @@ const attributions =
   '<a href="https://github.com/mapbox/geojson-vt">GeoJSON-VT</a>' +
   '';
 
+const hexToArr = (s) => {
+  const [r, g, b] = s.split("#")[1].match(/.{1,2}/g);
+  const c = [parseInt(r, 16), parseInt(g, 16), parseInt(b, 16), 0.5]
+  return c;
+}
+
+const getColorArray = (day) => {
+  const isHexColor = i => !!((i.length == 7) && (i.match(/^#[0-9A-Fa-f]{6}$/g)));
+  const searchParams = new URLSearchParams(window.location.search.substring(1));
+  const paramColor = searchParams.get(`${day}_cs`);
+  const defaultColorStr = document.getElementById(`${day}_cs`).value;
+  if (paramColor && isHexColor(paramColor)) {
+    return hexToArr(paramColor);
+  } else if (isHexColor(defaultColorStr)) {
+    console.log(`setting ${day} to html default`);
+    return hexToArr(defaultColorStr);
+  } else {
+    const randomColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+    console.log(`setting ${day} to ${randomColor}`);
+    return hexToArr(randomColor);
+  }
+}
 
 const vectors = {};
 const days = ["mon", "tue", "wed", "thu", "fri", "sat"];
 const colors = {
-  mon: [255, 0, 0, 0.5], // red
-  tue: [0, 255, 0, 0.5], // green
-  wed: [255, 165, 0, 0.5], // orange
-  thu: [80, 0, 80, 0.5], // purple
-  fri: [0, 0, 255, 0.5], // blue
-  sat: [0, 0, 0, 0.5], // black
+  //mon: [255, 0, 0, 0.5], // red
+  //tue: [0, 255, 0, 0.5], // green
+  //wed: [255, 165, 0, 0.5], // orange
+  //thu: [80, 0, 80, 0.5], // purple
+  //fri: [0, 0, 255, 0.5], // blue
+  //sat: [0, 0, 0, 0.5], // black
+  // we should do some error checking for the urlparam to ensure it is #HHHHHH
+/*
+  mon: searchParams.has("mon_cs") ? `${searchParams.get("mon_cs")}80` : document.getElementById("mon_cs").value,
+  tue: searchParams.has("tue_cs") ? `${searchParams.get("tue_cs")}80` : document.getElementById("tue_cs").value,
+  wed: searchParams.has("wed_cs") ? `${searchParams.get("wed_cs")}80` : document.getElementById("wed_cs").value,
+  thu: searchParams.has("thu_cs") ? `${searchParams.get("thu_cs")}80` : document.getElementById("thu_cs").value,
+  fri: searchParams.has("fri_cs") ? `${searchParams.get("fri_cs")}80` : document.getElementById("fri_cs").value,
+  sat: searchParams.has("sat_cs") ? `${searchParams.get("sat_cs")}80` : document.getElementById("sat_cs").value,
+  */
+  mon: getColorArray("mon"),
+  tue: getColorArray("tue"),
+  wed: getColorArray("wed"),
+  thu: getColorArray("thu"),
+  fri: getColorArray("fri"),
+  sat: getColorArray("sat"),
 };
 
 const scb = document.getElementById(`single_cb`);
@@ -148,6 +185,8 @@ const generateVectorTileSource = async (day, sm) => {
         extent: vectorSource.getTileGrid().getTileCoordExtent(tileCoord),
         featureProjection: map.getView().getProjection(),
       });
+      window.ff = features
+      console.log("ff:", features)
       tile.setFeatures(features);
     },
   });
@@ -193,7 +232,16 @@ for (let day of days) {
   }
 
   document.getElementById(`${day}_cb`).addEventListener("change", toggleLayerFromCB(day));
+  document.getElementById(`${day}_cs`).addEventListener("change", (e) => {
+    console.log(e.target.value)
+    console.log(day)
+    window.uuuu = vectors[`${day}_single`];
+    //vectors[`${day}_multi`].setVisible(true);
+    vectors[`${day}_single`].getStyle().getStroke().setColor(hexToArr(e.target.value));
+    vectors[`${day}_multi`].getStyle().getStroke().setColor(hexToArr(e.target.value));
+  });
 }
+  window.tttt = vectors[`thu_single`];
 
 
 const attribution = new Attribution({
