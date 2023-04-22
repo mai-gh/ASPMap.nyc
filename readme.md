@@ -2,7 +2,8 @@
 
 ### New York City Alternate Side Parking Color Overlay on Open Street Map
 
-![pic](pic.png)
+
+[![pic](pic.png)](https://mai-gh.github.io/streetparker2)
 
 #### Try it! --> https://mai-gh.github.io/streetparker2/
 
