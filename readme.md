@@ -5,13 +5,15 @@
 
 [![pic](pic.png)](https://mai-gh.github.io/streetparker2)
 
-#### Try it! --> https://mai-gh.github.io/streetparker2/
+#### Try it &nbsp; --> &nbsp; https://mai-gh.github.io/streetparker2/
 
 ---
 
 This is a re-creation of the original (and now non-existent) streetparker
 
-https://web.archive.org/web/20200702185538/nycparklife.com/streetparker
+https://web.archive.org/web/20160629162112/http://www.nycparklife.com/streetparker/
+
+https://web.archive.org/web/20160621142412/http://www.nycparklife.com/streetparker/about.html
 
 https://streetparker.splashthat.com/
 
