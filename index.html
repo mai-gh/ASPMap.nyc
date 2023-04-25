@@ -1,144 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <title>Street Parker 2</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <link rel="icon" href="asp.svg"/>
-    <title>Street Parker 2</title>
+    <meta name="referrer" content="no-referrer">
+    <link rel="icon" href="asp.svg">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@7.2.2/ol.min.css">
+    <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/geojson-vt@3.2.0/geojson-vt.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ol@7.2.2/dist/ol.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/ol@7.2.2/ol.min.css" rel="stylesheet">
-    <style>
-      html, body {
-        margin: 0;
-        height: 100%;
-        font: 16px/1.4 normal Arial, sans-serif;
-      }
-      .map {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-      }
-
-      #options {
-        position: absolute;
-        background-color: white;
-        bottom: .5em;
-        left: .5em;
-        border-radius: 8px;
-        display: inline-flex;
-        flex-direction: column;
-        padding: 4px;
-      }
-      .cb_row {
-        display: inline-flex;
-        flex-wrap: nowrap;
-        justify-content: flex-start;
-      }
-      .cb_label {
-        margin-left: 4px;
-        margin-right: 8px;
-      }
-      .color_select_box {
-        width: 20px;
-        height: auto;
-        padding: 0px !important;
-        margin: 2px;
-        margin-left: auto;
-        border-style: none !important;
-        opacity: 0.6;
-      }
-
-      .ol-attribution {
-        align-items: end;
-        text-align: left;
-      }
-      .ol-attribution button {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-      }
-
-      @keyframes spinner {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-      .spinner:after {
-        content: "";
-        box-sizing: border-box;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 40px;
-        height: 40px;
-        margin-top: -20px;
-        margin-left: -20px;
-        border-radius: 50%;
-        border: 5px solid rgba(180, 180, 180, 0.6);
-        border-top-color: rgba(0, 0, 0, 0.6);
-        animation: spinner 0.6s linear infinite;
-      }
-
-      .ol-popup {
-        position: absolute;
-        background-color: white;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-        padding: 15px;
-        border-radius: 10px;
-        border: 1px solid #cccccc;
-        bottom: 12px;
-        left: -50px;
-        min-width: 280px;
-      }
-      .ol-popup:after, .ol-popup:before {
-        top: 100%;
-        border: solid transparent;
-        content: " ";
-        height: 0;
-        width: 0;
-        position: absolute;
-        pointer-events: none;
-      }
-      .ol-popup:after {
-        border-top-color: white;
-        border-width: 10px;
-        left: 48px;
-        margin-left: -10px;
-      }
-      .ol-popup:before {
-        border-top-color: #cccccc;
-        border-width: 11px;
-        left: 48px;
-        margin-left: -11px;
-      }
-      .ol-popup-closer {
-        text-decoration: none;
-        position: absolute;
-        top: 2px;
-        right: 8px;
-      }
-      .ol-popup-closer:after {
-        content: "✖";
-      }
-
-      #popup-content > div > table {
-        border-spacing: 1em 0;
-      }
-
-      #popup-content > div > table > tbody > tr > :last-child {
-        text-align: left;
-      }
-
-      #popup-content > div > table > tbody > tr > :first-child {
-        text-align: right;
-      }
-
-      #popup-content > div > div{
-        text-align: center;
-      }
-
-    </style>
   </head>
   <body>
     <div id="map" class="map"></div>
@@ -148,13 +19,40 @@
     </div>
     <div id="options_box">
       <form id="options" action="">
-        <div class="cb_row"> <input type="checkbox" id="single_cb" class='cb_input' checked /> <label for="single_cb" class='cb_label'>Only single days</label> </div>
-        <div class="cb_row"> <input type="checkbox" id="mon_cb" class='cb_input' checked /> <label for="mon_cb" class='cb_label'>Monday</label> <input type="color" class="color_select_box" id="mon_cs" value="#ff0000"></div>
-        <div class="cb_row"> <input type="checkbox" id="tue_cb" class='cb_input' /> <label for="tue_cb" class='cb_label'>Tuesday</label> <input type="color" class="color_select_box" id="tue_cs" value="#808000"></div>
-        <div class="cb_row"> <input type="checkbox" id="wed_cb" class='cb_input' /> <label for="wed_cb" class='cb_label'>Wednesday</label> <input type="color" class="color_select_box" id="wed_cs" value="#00ff00"></div>
-        <div class="cb_row"> <input type="checkbox" id="thu_cb" class='cb_input' /> <label for="thu_cb" class='cb_label'>Thursday</label> <input type="color" class="color_select_box" id="thu_cs" value="#008080"></div>
-        <div class="cb_row"> <input type="checkbox" id="fri_cb" class='cb_input' /> <label for="fri_cb" class='cb_label'>Friday</label> <input type="color" class="color_select_box" id="fri_cs" value="#0000ff"> </div>
-        <div class="cb_row"> <input type="checkbox" id="sat_cb" class='cb_input' /> <label for="sat_cb" class='cb_label'>Saturday</label> <input type="color" class="color_select_box" id="sat_cs" value="#000000"></div>
+        <div class="cb_row">
+          <input type="checkbox" id="single_cb" class='cb_input' checked />
+          <label for="single_cb" class='cb_label'>Only single days</label>
+        </div>
+        <div class="cb_row">
+          <input type="checkbox" id="mon_cb" class='cb_input' checked />
+          <label for="mon_cb" class='cb_label'>Monday</label> 
+          <input type="color" class="color_select_box" id="mon_cs" value="#ff0000" />
+        </div>
+        <div class="cb_row">
+          <input type="checkbox" id="tue_cb" class='cb_input' />
+          <label for="tue_cb" class='cb_label'>Tuesday</label>
+          <input type="color" class="color_select_box" id="tue_cs" value="#808000" />
+        </div>
+        <div class="cb_row">
+          <input type="checkbox" id="wed_cb" class='cb_input' />
+          <label for="wed_cb" class='cb_label'>Wednesday</label>
+          <input type="color" class="color_select_box" id="wed_cs" value="#00ff00" />
+        </div>
+        <div class="cb_row">
+          <input type="checkbox" id="thu_cb" class='cb_input' />
+          <label for="thu_cb" class='cb_label'>Thursday</label>
+          <input type="color" class="color_select_box" id="thu_cs" value="#008080" />
+        </div>
+        <div class="cb_row">
+          <input type="checkbox" id="fri_cb" class='cb_input' />
+          <label for="fri_cb" class='cb_label'>Friday</label>
+          <input type="color" class="color_select_box" id="fri_cs" value="#0000ff" />
+        </div>
+        <div class="cb_row">
+          <input type="checkbox" id="sat_cb" class='cb_input' />
+          <label for="sat_cb" class='cb_label'>Saturday</label>
+          <input type="color" class="color_select_box" id="sat_cs" value="#000000" />
+        </div>
       </form>
     </div>
     <script type="module" src="main.js"></script>

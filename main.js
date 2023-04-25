@@ -16,7 +16,6 @@ const Attribution = ol.control.Attribution;
 const defaultControls = ol.control.defaults.defaults;
 useGeographic();
 
-
 // Converts geojson-vt data to GeoJSON
 const replacer = function (key, value) {
   if (!value || !value.geometry) {
@@ -59,12 +58,12 @@ const replacer = function (key, value) {
 const hexToArr = (s) => {
   const [r, g, b] = s.split("#")[1].match(/.{1,2}/g);
   const a = 0.5;
-  const c = [parseInt(r, 16), parseInt(g, 16), parseInt(b, 16), a]
+  const c = [parseInt(r, 16), parseInt(g, 16), parseInt(b, 16), a];
   return c;
-}
+};
 
 const getColorArray = (day) => {
-  const isHexColor = i => !!((i.length == 7) && (i.match(/^#[0-9A-Fa-f]{6}$/g)));
+  const isHexColor = (i) => !!(i.length == 7 && i.match(/^#[0-9A-Fa-f]{6}$/g));
   const searchParams = new URLSearchParams(window.location.search.substring(1));
   const paramColor = searchParams.get(`${day}_cs`);
   const defaultColorStr = document.getElementById(`${day}_cs`).value;
@@ -74,11 +73,11 @@ const getColorArray = (day) => {
     return hexToArr(defaultColorStr);
   } else {
     // this area should never be reached so long as html has correct colors
-    const randomColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+    const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
     console.log(`setting ${day} to ${randomColor}`);
     return hexToArr(randomColor);
   }
-}
+};
 
 const vectors = {};
 const days = ["mon", "tue", "wed", "thu", "fri", "sat"];
@@ -145,27 +144,27 @@ const generateVectorTileSource = async (day, sm) => {
 };
 
 const toggleLayerFromCB = (day) => (e) => {
-    const cb = document.getElementById(`${day}_cb`);
-    if (!scb.checked) {
-      // meaning show single AND multi
-      if (cb.checked) {
-        vectors[`${day}_single`].setVisible(true);
-        vectors[`${day}_multi`].setVisible(true);
-      } else {
-        vectors[`${day}_single`].setVisible(false);
-        vectors[`${day}_multi`].setVisible(false);
-      }
+  const cb = document.getElementById(`${day}_cb`);
+  if (!scb.checked) {
+    // meaning show single AND multi
+    if (cb.checked) {
+      vectors[`${day}_single`].setVisible(true);
+      vectors[`${day}_multi`].setVisible(true);
     } else {
-      // show ONLY single
-      if (cb.checked) {
-        vectors[`${day}_single`].setVisible(true);
-        vectors[`${day}_multi`].setVisible(false);
-      } else {
-        vectors[`${day}_single`].setVisible(false);
-        vectors[`${day}_multi`].setVisible(false);
-      }
+      vectors[`${day}_single`].setVisible(false);
+      vectors[`${day}_multi`].setVisible(false);
     }
-}
+  } else {
+    // show ONLY single
+    if (cb.checked) {
+      vectors[`${day}_single`].setVisible(true);
+      vectors[`${day}_multi`].setVisible(false);
+    } else {
+      vectors[`${day}_single`].setVisible(false);
+      vectors[`${day}_multi`].setVisible(false);
+    }
+  }
+};
 
 for (let day of days) {
   for (let sm of ["single", "multi"]) {
@@ -180,10 +179,18 @@ for (let day of days) {
     });
   }
 
-  document.getElementById(`${day}_cb`).addEventListener("change", toggleLayerFromCB(day));
+  document
+    .getElementById(`${day}_cb`)
+    .addEventListener("change", toggleLayerFromCB(day));
   document.getElementById(`${day}_cs`).addEventListener("change", async (e) => {
-    vectors[`${day}_single`].getStyle().getStroke().setColor(hexToArr(e.target.value));
-    vectors[`${day}_multi`].getStyle().getStroke().setColor(hexToArr(e.target.value));
+    vectors[`${day}_single`]
+      .getStyle()
+      .getStroke()
+      .setColor(hexToArr(e.target.value));
+    vectors[`${day}_multi`]
+      .getStyle()
+      .getStroke()
+      .setColor(hexToArr(e.target.value));
     // we have to regenerate the vector tile source as geojson-vt doesnt currently support individual tile changes
     // https://github.com/mapbox/geojson-vt/issues/26
     for (let sm of ["single", "multi"]) {
@@ -194,19 +201,19 @@ for (let day of days) {
 }
 
 const attributionsHTML =
-  '<a href="https://github.com/mai-gh/streetparker2"><b>Fork me on GitHub</b></a>' + 
-  '<br />' +
-  '<br />' +
+  '<a href="https://github.com/mai-gh/streetparker2"><b>Fork me on GitHub</b></a>' +
+  "<br />" +
+  "<br />" +
   '<a href="https://data.cityofnewyork.us/Transportation/Parking-Regulation-Locations-and-Signs/xswq-wnv9">NYC OpenData</a>' +
-  '<br />' +
+  "<br />" +
   '<a href="https://www.openstreetmap.org/">OpenStreetMap</a>' +
-  '<br />' +
+  "<br />" +
   '<a href="https://openlayers.org/">OpenLayers</a>' +
-  '<br />' +
+  "<br />" +
   '<a href="https://github.com/mapbox/geojson-vt">GeoJSON-VT</a>' +
-  '<br />' +
+  "<br />" +
   '<a href="https://github.com/Toblerity/Fiona">Fiona</a>' +
-  '';
+  "";
 
 const attribution = new Attribution({
   collapsible: true,
@@ -223,7 +230,7 @@ const map = new Map({
     extent: [-74.15, 40.535, -73.65, 40.945],
     constrainResolution: true,
   }),
-  controls: defaultControls({attribution: false}).extend([attribution]),
+  controls: defaultControls({ attribution: false }).extend([attribution]),
   layers: [
     new TileLayer({
       source: new OSM({
@@ -235,7 +242,7 @@ const map = new Map({
 });
 
 (async () => {
-  map.getTargetElement().classList.add('spinner');
+  map.getTargetElement().classList.add("spinner");
 
   for (let day of days) {
     for (let sm of ["single", "multi"]) {
@@ -253,16 +260,13 @@ const map = new Map({
   map.on("loadend", function () {
     map.getTargetElement().classList.remove("spinner");
   });
-
 })();
-
-
 
 // ---------------- pop over stuff ---------------- //
 
-const container = document.getElementById('popup');
-const content = document.getElementById('popup-content');
-const closer = document.getElementById('popup-closer');
+const container = document.getElementById("popup");
+const content = document.getElementById("popup-content");
+const closer = document.getElementById("popup-closer");
 
 const overlay = new Overlay({
   element: container,
@@ -280,8 +284,7 @@ closer.onclick = function () {
   return false;
 };
 
-map.on('singleclick', function (evt) {
-
+map.on("singleclick", function (evt) {
   const feature = map.getFeaturesAtPixel(evt.pixel)[0];
 
   if (!feature) {
