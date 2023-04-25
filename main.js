@@ -14,6 +14,7 @@ const VectorTileSource = ol.source.VectorTile;
 const Projection = ol.proj.Projection;
 const Attribution = ol.control.Attribution;
 const defaultControls = ol.control.defaults.defaults;
+useGeographic();
 
 
 // Converts geojson-vt data to GeoJSON
@@ -54,21 +55,6 @@ const replacer = function (key, value) {
     properties: value.tags,
   };
 };
-
-const attributions =
-  '<a href="https://github.com/mai-gh/streetparker2"><b>Fork me on GitHub</b></a>' + 
-  '<br />' +
-  '<br />' +
-  '<a href="https://data.cityofnewyork.us/Transportation/Parking-Regulation-Locations-and-Signs/xswq-wnv9">NYC OpenData</a>' +
-  '<br />' +
-  '<a href="https://www.openstreetmap.org/">OpenStreetMap</a>' +
-  '<br />' +
-  '<a href="https://openlayers.org/">OpenLayers</a>' +
-  '<br />' +
-  '<a href="https://github.com/Toblerity/Fiona">Fiona</a>' +
-  '<br />' +
-  '<a href="https://github.com/mapbox/geojson-vt">GeoJSON-VT</a>' +
-  '';
 
 const hexToArr = (s) => {
   const [r, g, b] = s.split("#")[1].match(/.{1,2}/g);
@@ -181,7 +167,6 @@ const toggleLayerFromCB = (day) => (e) => {
     }
 }
 
-useGeographic();
 for (let day of days) {
   for (let sm of ["single", "multi"]) {
     vectors[`${day}_${sm}`] = new VectorTileLayer({
@@ -208,6 +193,20 @@ for (let day of days) {
   });
 }
 
+const attributionsHTML =
+  '<a href="https://github.com/mai-gh/streetparker2"><b>Fork me on GitHub</b></a>' + 
+  '<br />' +
+  '<br />' +
+  '<a href="https://data.cityofnewyork.us/Transportation/Parking-Regulation-Locations-and-Signs/xswq-wnv9">NYC OpenData</a>' +
+  '<br />' +
+  '<a href="https://www.openstreetmap.org/">OpenStreetMap</a>' +
+  '<br />' +
+  '<a href="https://openlayers.org/">OpenLayers</a>' +
+  '<br />' +
+  '<a href="https://github.com/mapbox/geojson-vt">GeoJSON-VT</a>' +
+  '<br />' +
+  '<a href="https://github.com/Toblerity/Fiona">Fiona</a>' +
+  '';
 
 const attribution = new Attribution({
   collapsible: true,
@@ -228,7 +227,7 @@ const map = new Map({
   layers: [
     new TileLayer({
       source: new OSM({
-        attributions: attributions,
+        attributions: attributionsHTML,
       }),
     }),
     ...Object.values(vectors),
@@ -336,39 +335,3 @@ if (urlParams.has("l")) {
   // check if multiday is set for monday, if not, set for single day
   if (la[2] === "0") document.getElementById(`single_cb`).checked = true;
 }
-
-let bbb = document.querySelector(".ol-attribution button")
-document.querySelector('.ol-attribution').replaceChildren(bbb)
-let uuu = document.createElement("ul")
-
-let l1 = document.createElement("li")
-l1.innerHTML = '<a href="https://github.com/mai-gh/streetparker2"><b>Fork me on GitHub</b></a>'; 
-uuu.appendChild(l1);
-uuu.appendChild(document.createElement("br"))
-uuu.appendChild(document.createElement("br"))
-
-let l2 = document.createElement("li")
-l2.innerHTML = '<a href="https://data.cityofnewyork.us/Transportation/Parking-Regulation-Locations-and-Signs/xswq-wnv9">NYC OpenData</a>'; 
-uuu.appendChild(l2);
-uuu.appendChild(document.createElement("br"))
-
-let l3 = document.createElement("li")
-l3.innerHTML = '<a href="https://www.openstreetmap.org/">OpenStreetMap</a>'; 
-uuu.appendChild(l3);
-uuu.appendChild(document.createElement("br"))
-
-let l4 = document.createElement("li")
-l4.innerHTML = '<a href="https://openlayers.org/">OpenLayers</a>'; 
-uuu.appendChild(l4);
-uuu.appendChild(document.createElement("br"))
-
-let l5 = document.createElement("li")
-l5.innerHTML = '<a href="https://github.com/mapbox/geojson-vt">GeoJSON-VT</a>'; 
-uuu.appendChild(l5);
-uuu.appendChild(document.createElement("br"))
-
-let l6 = document.createElement("li")
-l6.innerHTML = '<a href="https://github.com/Toblerity/Fiona">Fiona</a>'; 
-uuu.appendChild(l6);
-
-document.querySelector('.ol-attribution').appendChild(uuu);
