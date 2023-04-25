@@ -179,18 +179,10 @@ for (let day of days) {
     });
   }
 
-  document
-    .getElementById(`${day}_cb`)
-    .addEventListener("change", toggleLayerFromCB(day));
+  document.getElementById(`${day}_cb`).addEventListener("change", toggleLayerFromCB(day));
   document.getElementById(`${day}_cs`).addEventListener("change", async (e) => {
-    vectors[`${day}_single`]
-      .getStyle()
-      .getStroke()
-      .setColor(hexToArr(e.target.value));
-    vectors[`${day}_multi`]
-      .getStyle()
-      .getStroke()
-      .setColor(hexToArr(e.target.value));
+    vectors[`${day}_single`].getStyle().getStroke().setColor(hexToArr(e.target.value));
+    vectors[`${day}_multi`].getStyle().getStroke().setColor(hexToArr(e.target.value));
     // we have to regenerate the vector tile source as geojson-vt doesnt currently support individual tile changes
     // https://github.com/mapbox/geojson-vt/issues/26
     for (let sm of ["single", "multi"]) {
