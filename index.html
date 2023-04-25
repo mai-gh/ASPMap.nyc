@@ -5,20 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <link rel="icon" href="asp.svg"/>
     <title>Street Parker 2</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
     <script src="https://unpkg.com/geojson-vt@3.2.0/geojson-vt.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ol@7.2.2/dist/ol.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/ol@7.2.2/ol.min.css" rel="stylesheet">
     <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+        font: 16px/1.4 normal Arial, sans-serif;
+      }
       .map {
         width: 100%;
         height: 100%;
         position: absolute;
       }
-      td {
-        padding: 0 0.5em;
-        text-align: right;
-      }
+
       #options {
         position: absolute;
         background-color: white;
@@ -47,28 +48,6 @@
         border-style: none !important;
         opacity: 0.6;
       }
-      dl.inline-flex {
-        display: flex;
-        flex-flow: row;
-        flex-wrap: wrap;
-        width: 300px;      /* set the container width*/
-        overflow: visible;
-      }
-      dl.inline-flex dt {
-        flex: 0 0 50%;
-        text-overflow: ellipsis;
-        overflow: hidden;
-      }
-      dl.inline-flex dd {
-        flex:0 0 50%;
-        margin-left: auto;
-        text-align: left;
-        text-overflow: ellipsis;
-        overflow: hidden;
-      }
-      .popover-body{
-        width: 600px; /* Max Width of the popover (depending on the container!) */
-      }
 
       .ol-attribution {
         align-items: end;
@@ -80,13 +59,11 @@
         right: 0;
       }
 
-
       @keyframes spinner {
         to {
           transform: rotate(360deg);
         }
       }
-
       .spinner:after {
         content: "";
         box-sizing: border-box;
@@ -102,11 +79,72 @@
         border-top-color: rgba(0, 0, 0, 0.6);
         animation: spinner 0.6s linear infinite;
       }
+
+      .ol-popup {
+        position: absolute;
+        background-color: white;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid #cccccc;
+        bottom: 12px;
+        left: -50px;
+        min-width: 280px;
+      }
+      .ol-popup:after, .ol-popup:before {
+        top: 100%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+      }
+      .ol-popup:after {
+        border-top-color: white;
+        border-width: 10px;
+        left: 48px;
+        margin-left: -10px;
+      }
+      .ol-popup:before {
+        border-top-color: #cccccc;
+        border-width: 11px;
+        left: 48px;
+        margin-left: -11px;
+      }
+      .ol-popup-closer {
+        text-decoration: none;
+        position: absolute;
+        top: 2px;
+        right: 8px;
+      }
+      .ol-popup-closer:after {
+        content: "✖";
+      }
+
+      #popup-content > div > table {
+        border-spacing: 1em 0;
+      }
+
+      #popup-content > div > table > tbody > tr > :last-child {
+        text-align: left;
+      }
+
+      #popup-content > div > table > tbody > tr > :first-child {
+        text-align: right;
+      }
+
+      #popup-content > div > div{
+        text-align: center;
+      }
+
     </style>
   </head>
   <body>
-    <div id="map" class="map">
-      <div id="popup"></div>
+    <div id="map" class="map"></div>
+    <div id="popup" class="ol-popup">
+      <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+      <div id="popup-content"></div>
     </div>
     <div id="options_box">
       <form id="options" action="">
@@ -119,7 +157,6 @@
         <div class="cb_row"> <input type="checkbox" id="sat_cb" class='cb_input' /> <label for="sat_cb" class='cb_label'>Saturday</label> <input type="color" class="color_select_box" id="sat_cs" value="#000000"></div>
       </form>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="main.js"></script>
   </body>
 </html>

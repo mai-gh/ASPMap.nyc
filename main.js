@@ -1,37 +1,17 @@
-//import {Feature, Map, Overlay, View} from 'ol/index.js';
-//import {OSM, Vector as VectorSource} from 'ol/source.js';
-//import {Point, LineString} from 'ol/geom.js';
-//import {Point} from 'ol/geom.js';
-//import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer.js';
-//import {useGeographic} from 'ol/proj.js';
-//import {Stroke, Style} from 'ol/style.js';
-//import GeoJSON from 'ol/format/GeoJSON.js';
-//import Link from 'ol/interaction/Link.js';
-
-const Feature = ol.Feature;
 const Map = ol.Map;
 const Overlay = ol.Overlay;
 const View = ol.View;
 const OSM = ol.source.OSM;
-const VectorSource = ol.source.Vector;
 const LineString = ol.geom.LineString;
 const TileLayer = ol.layer.Tile;
-//const VectorLayer = ol.layer.Vector;
 const useGeographic = ol.proj.useGeographic;
 const Stroke = ol.style.Stroke;
 const Style = ol.style.Style;
 const GeoJSON = ol.format.GeoJSON;
 const Link = ol.interaction.Link;
-
-//import VectorTileLayer from 'ol/layer/VectorTile.js';
-//import VectorTileSource from 'ol/source/VectorTile.js';
-//import Projection from 'ol/proj/Projection.js';
 const VectorTileLayer = ol.layer.VectorTile;
 const VectorTileSource = ol.source.VectorTile;
 const Projection = ol.proj.Projection;
-//const Fill = ol.style.Fill;
-const toLonLat = ol.proj.toLonLat;
-//import {Attribution, defaults as defaultControls} from 'ol/control.js';
 const Attribution = ol.control.Attribution;
 const defaultControls = ol.control.defaults.defaults;
 
@@ -277,69 +257,68 @@ const map = new Map({
 
 })();
 
+
+
 // ---------------- pop over stuff ---------------- //
 
-const element = document.getElementById("popup");
-const popup = new Overlay({
-  element: element,
-  stopEvent: false,
+const container = document.getElementById('popup');
+const content = document.getElementById('popup-content');
+const closer = document.getElementById('popup-closer');
+
+const overlay = new Overlay({
+  element: container,
+  autoPan: {
+    animation: {
+      duration: 250,
+    },
+  },
 });
-map.addOverlay(popup);
+map.addOverlay(overlay);
 
-function formatCoordinate(text) {
-  return `
-    <dl>
-      <dt>ORDER#:</dt><dd>${text.name}</dd>
-      <dt>STREET:</dt><dd>${text.st}</dd>
-      <dt>SIDE:</dt><dd>${text.sos}</dd>
-      <dt>TEXT:</dt><dd>${text.desc}</dd>
-    </dl>`;
-}
+closer.onclick = function () {
+  overlay.setPosition(undefined);
+  closer.blur();
+  return false;
+};
 
-let popover;
-map.on("click", function (event) {
-  if (popover) {
-    popover.dispose();
-    popover = undefined;
-  }
+map.on('singleclick', function (evt) {
 
-  const feature = map.getFeaturesAtPixel(event.pixel)[0];
+  const feature = map.getFeaturesAtPixel(evt.pixel)[0];
 
   if (!feature) {
+    overlay.setPosition(undefined);
     return;
   }
 
-  const coordinate = feature.getGeometry().getCoordinates();
+  const coordinate = evt.coordinate;
+
   const name = feature.get("name");
   const desc = feature.get("desc");
   const st = feature.get("st");
   const sos = feature.get("sos");
-  const [mid_lon, mid_lat] = toLonLat([
-    coordinate[0][0] - (coordinate[0][0] - coordinate[1][0]) / 2,
-    coordinate[0][1] - (coordinate[0][1] - coordinate[1][1]) / 2,
-  ]);
+  const streetViewURL = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${coordinate[1]},${coordinate[0]}`;
 
-  popup.setPosition([
-    mid_lon + Math.round(event.coordinate[0] / 360) * 360,
-    mid_lat,
-  ]);
+  const infoHTML = `
+    <div>
+      <table>
+        <tr><td>Order #:</td><td>${name}</td></tr>
+        <tr><td>Street:</td><td>${st}</td></tr>
+        <tr><td>Side:</td><td>${sos}</td></tr>
+      </table>
+      <br>
+      <div>${desc}</div>
+      <div><a href="${streetViewURL}" target="_blank" >Street View</a></div>
+    </div>
+  `;
 
-  popover = new bootstrap.Popover(element, {
-    container: element.parentElement,
-    content: formatCoordinate({ name, desc, st, sos }),
-    html: true,
-    offset: [0, 20],
-    placement: "top",
-    sanitize: false,
-  });
-  popover.show();
+  content.innerHTML = infoHTML;
+  overlay.setPosition(coordinate);
 });
 
 map.on("pointermove", function (event) {
   const type = map.hasFeatureAtPixel(event.pixel) ? "pointer" : "inherit";
   map.getViewport().style.cursor = type;
 });
-
 
 map.addInteraction(new Link());
 
@@ -357,9 +336,6 @@ if (urlParams.has("l")) {
   // check if multiday is set for monday, if not, set for single day
   if (la[2] === "0") document.getElementById(`single_cb`).checked = true;
 }
-
-
-//document.querySelector('.ol-attribution').innerHTML= '' 
 
 let bbb = document.querySelector(".ol-attribution button")
 document.querySelector('.ol-attribution').replaceChildren(bbb)
@@ -396,11 +372,3 @@ l6.innerHTML = '<a href="https://github.com/Toblerity/Fiona">Fiona</a>';
 uuu.appendChild(l6);
 
 document.querySelector('.ol-attribution').appendChild(uuu);
-
-
-
-
-
-
-
-
