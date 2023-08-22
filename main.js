@@ -277,7 +277,7 @@ closer.onclick = function () {
 };
 
 map.on("singleclick", function (evt) {
-  const feature = map.getFeaturesAtPixel(evt.pixel)[0];
+  const feature = map.getFeaturesAtPixel(evt.pixel, {hitTolerance: 1})[0];
 
   if (!feature) {
     overlay.setPosition(undefined);
