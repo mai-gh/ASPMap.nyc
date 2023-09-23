@@ -193,21 +193,22 @@ for (let day of days) {
 }
 
 const attributionsHTML =
-  '<a href="https://ko-fi.com/mai_dev"><b>Donate!</b></a>' +
-  "<br />" +
-  "<br />" +
+  '<div style="display: flex; flex-direction: column;">' + 
+  '<div style="flex-grow: 1;width: auto;height: 10px;"></div>' + 
+  '<a style="align-self: center" href="https://ko-fi.com/mai_dev"><b>Donate!</b></a>' +
+  '<div style="flex-grow: 1;width: auto;height: 10px;"></div>' + 
   '<a href="https://github.com/mai-gh/ASPMap.nyc"><b>Fork me on GitHub</b></a>' +
-  "<br />" +
-  "<br />" +
+  '<br />' +
   '<a href="https://data.cityofnewyork.us/Transportation/Parking-Regulation-Locations-and-Signs/xswq-wnv9">NYC OpenData</a>' +
-  "<br />" +
+  '<br />' +
   '<a href="https://www.openstreetmap.org/">OpenStreetMap</a>' +
-  "<br />" +
+  '<br />' +
   '<a href="https://openlayers.org/">OpenLayers</a>' +
-  "<br />" +
+  '<br />' +
   '<a href="https://github.com/mapbox/geojson-vt">GeoJSON-VT</a>' +
-  "<br />" +
+  '<br />' +
   '<a href="https://github.com/Toblerity/Fiona">Fiona</a>' +
+  '</div>' +
   "";
 
 const attribution = new Attribution({
