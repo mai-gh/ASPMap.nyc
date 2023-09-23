@@ -193,7 +193,7 @@ for (let day of days) {
 }
 
 const attributionsHTML =
-  '<a href="https://github.com/mai-gh/streetparker2"><b>Fork me on GitHub</b></a>' +
+  '<a href="https://github.com/mai-gh/ASPMap.nyc"><b>Fork me on GitHub</b></a>' +
   "<br />" +
   "<br />" +
   '<a href="https://data.cityofnewyork.us/Transportation/Parking-Regulation-Locations-and-Signs/xswq-wnv9">NYC OpenData</a>' +
