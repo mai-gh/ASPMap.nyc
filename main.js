@@ -193,6 +193,9 @@ for (let day of days) {
 }
 
 const attributionsHTML =
+  '<a href="https://ko-fi.com/mai_dev"><b>Donate!</b></a>' +
+  "<br />" +
+  "<br />" +
   '<a href="https://github.com/mai-gh/ASPMap.nyc"><b>Fork me on GitHub</b></a>' +
   "<br />" +
   "<br />" +
