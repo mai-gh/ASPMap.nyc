@@ -101,9 +101,34 @@ scb.addEventListener("change", (e) => {
   }
 });
 
+
+const getFileXHR = (path) => {
+  return new Promise((resolve, reject) => {
+    try {
+      let xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            resolve(xhr.responseText);
+          } else {
+            resolve(null);
+          }
+        }
+      };
+      xhr.open("GET", path);
+      xhr.send();
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
 const generateVectorTileSource = async (day, sm) => {
-  const json = await fetch(`./data/${day}_${sm}_flat.json`).then((r) =>
-    r.json()
+  //const json = await fetch(`./data/${day}_${sm}_flat.json`).then((r) =>
+  //  r.json()
+  //);
+  const json = await getFileXHR(`./data/${day}_${sm}_flat.json`).then((r) =>
+    JSON.parse(r)
   );
   const tileIndex = geojsonvt(json, {
     extent: 4096,
@@ -224,6 +249,7 @@ const map = new Map({
     zoom: 12,
     enableRotation: false,
     extent: [-74.15, 40.535, -73.65, 40.945],
+//    extent: [-74.05, 40.57, -73.76, 40.9], // tighter
     constrainResolution: true,
   }),
   controls: defaultControls({ attribution: false }).extend([attribution]),
@@ -231,6 +257,7 @@ const map = new Map({
     new TileLayer({
       source: new OSM({
         attributions: attributionsHTML,
+//        url: 'tiles/{z}/{x}/{y}.png'
       }),
     }),
     ...Object.values(vectors),
