@@ -1,0 +1,54 @@
+# Privacy Policy
+
+## Collection of Routine Information
+
+   - No data is collected
+
+
+
+
+## Cookies
+
+   - No cookies are created or used
+
+
+
+
+## Advertisement and Other Third Parties
+
+   - No Advertisements
+
+
+
+
+## Links to Third Party Websites
+
+  - ASPMap.nyc uses openstreetmap.org as base map tiles. OpenStreetMap's privacy policy: https://wiki.openstreetmap.org/wiki/Privacy_Policy
+
+  - ASPMap.nyc generates links to Google Maps Street View based on coordinates of where you clicked to get this link. No connection to Google Maps is made unless you click this link. Google's privacy policy: https://policies.google.com/privacy
+
+  - ASPMap.nyc is hosted on GitHub Pages. The Android app does not connect to GitHub, unless you click on the links for the libraries used ( GeoJSON-VT & Fiona ) or the source repository of ASPMap.nyc. GitHub's privacy policy: https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement
+
+  - ASPMap.nyc has a link to OpenLayers. No connection to openlayers.org is made unless you click the link
+
+  - ASPMap.nyc has a link to the dataset on NYC OpenData originally used to generate the parking days layers. No connection is made unless you click the link. NYC OpenData privacy policy: https://www.nyc.gov/home/privacy-policy.page
+
+  - ASPMap.nyc has a link to ko-fi.com. No connection is made unless you click the link. Ko-Fi's privacy policy: https://more.ko-fi.com/privacy
+
+  - All Links do not have refer headers
+
+
+
+
+## Security
+
+  - No data is collected, stored or transmitted.
+
+
+
+
+## Contact Information
+
+  - Email: jea989@gmail.com
+
+

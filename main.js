@@ -217,22 +217,44 @@ for (let day of days) {
   });
 }
 
+const showPrivacyPolicy = async () => {
+  const PP = await getFileXHR("./privacy-policy.txt");
+  const aa = document.createElement("template");
+  aa.innerHTML = `
+<div id="modal-background">
+  <div id="modal">
+    <div id="modal-header">
+      <h3>Privacy Policy</h3>
+      <span id="modal-close-button">&times;</span>
+    </div>
+    <div id="modal-body">
+    <pre>${PP}</pre>
+    </div>
+  </div>
+</div>`.trim()
+
+  document.body.appendChild(aa.content.firstChild)
+  document.getElementById("modal-close-button").addEventListener("click", e => { document.getElementById("modal-background").remove() })
+}
+
 const attributionsHTML =
   '<div style="display: flex; flex-direction: column;">' + 
   '<div style="flex-grow: 1;width: auto;height: 10px;"></div>' + 
-  '<a style="align-self: center" href="https://ko-fi.com/mai_dev"><b>Donate!</b></a>' +
+  '<a style="align-self: center" href="https://ko-fi.com/mai_dev" target="_blank" ><b>Donate!</b></a>' +
   '<div style="flex-grow: 1;width: auto;height: 10px;"></div>' + 
-  '<a href="https://github.com/mai-gh/ASPMap.nyc"><b>Fork me on GitHub</b></a>' +
+  '<a href="https://github.com/mai-gh/ASPMap.nyc" target="_blank" ><b>Fork me on GitHub</b></a>' +
   '<br />' +
-  '<a href="https://data.cityofnewyork.us/Transportation/Parking-Regulation-Locations-and-Signs/xswq-wnv9">NYC OpenData</a>' +
+  '<a href="https://data.cityofnewyork.us/Transportation/Parking-Regulation-Locations-and-Signs/xswq-wnv9" target="_blank" >NYC OpenData</a>' +
   '<br />' +
-  '<a href="https://www.openstreetmap.org/">OpenStreetMap</a>' +
+  '<a href="https://www.openstreetmap.org/" target="_blank" >OpenStreetMap</a>' +
   '<br />' +
-  '<a href="https://openlayers.org/">OpenLayers</a>' +
+  '<a href="https://openlayers.org/" target="_blank" >OpenLayers</a>' +
   '<br />' +
-  '<a href="https://github.com/mapbox/geojson-vt">GeoJSON-VT</a>' +
+  '<a href="https://github.com/mapbox/geojson-vt" target="_blank" >GeoJSON-VT</a>' +
   '<br />' +
-  '<a href="https://github.com/Toblerity/Fiona">Fiona</a>' +
+  '<a href="https://github.com/Toblerity/Fiona" target="_blank" >Fiona</a>' +
+  '<br />' +
+  `<div id="privacy-policy-button" style=>Privacy Policy</div>` +
   '</div>' +
   "";
 
@@ -283,6 +305,8 @@ const map = new Map({
   map.on("loadend", function () {
     map.getTargetElement().classList.remove("spinner");
   });
+
+  document.getElementById("privacy-policy-button").addEventListener("click", showPrivacyPolicy)
 })();
 
 // ---------------- pop over stuff ---------------- //
@@ -361,3 +385,9 @@ if (urlParams.has("l")) {
   // check if multiday is set for monday, if not, set for single day
   if (la[2] === "0") document.getElementById(`single_cb`).checked = true;
 }
+
+
+//const modalbg = document.createElement("div");
+//modalbg.id = "modal-bg"
+
+

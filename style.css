@@ -137,3 +137,83 @@ html, body {
 #popup-content > div > div{
   text-align: center;
 }
+
+#privacy-policy-button{
+  cursor: pointer;
+}
+
+#modal-background {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: none;
+  z-index: 9998;
+  display:block;
+}
+
+#modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  height: 90%;
+  background-color: #fff;
+  box-sizing: border-box;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+#modal-body {
+height: calc(100% - 4em);
+}
+
+#modal-body > pre {
+  padding: 1rem;
+  overflow: scroll;
+  height: calc(100% - 4rem - 2px);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  border: 1px solid black;
+  margin: 1rem;
+}
+
+#modal-header {
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #dddddd;
+  box-sizing: border-box;
+  height: 4em;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: end;
+}
+
+#modal-header h3 {
+  box-sizing: border-box;
+  color: #4d4d4d;
+  font-size: 1.5rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#modal-header span {
+  box-sizing: border-box;
+  border-left: 1px solid #dddddd;
+  padding: 0 1rem 0 1rem;
+  cursor: pointer;
+  font-size: 2rem;
+  user-select: none;
+}
+
+#modal-header span:hover {
+  opacity: 0.6;
+}
